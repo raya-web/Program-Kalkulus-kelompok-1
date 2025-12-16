@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulus Pro - Kelompok Satu</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Konfigurasi MathJax -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            svg: { fontCache: 'global' },
+            options: { enableMenu: false }
+        };
+    </script>
+
+    <!-- Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/nerdamer@latest/nerdamer.core.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/nerdamer@latest/Algebra.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/nerdamer@latest/Calculus.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/nerdamer@latest/Solve.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://unpkg.com/d3@3/d3.min.js"></script>
+    <script src="https://unpkg.com/function-plot@1/dist/function-plot.js"></script>
+    <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
+
+    <style>
+        /* --- 1. SETTING VISUAL --- */
+        :root {
+            --bg-body: #0a0e17; 
+            --primary-gradient: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+            --primary-glow: rgba(168, 85, 247, 0.5);
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --text-accent: #e0e7ff;
+            --success-color: #10b981;
+        }
+
+        * { box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        html { font-size: 16px; scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            padding-top: 80px;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(124, 58, 237, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.15) 0%, transparent 40%);
+        }
+
+        /* MathJax Styling */
+        mjx-container { font-size: 1.15em !important; color: #e0e7ff !important; outline: none; }
+        
+        /* Grafik Styling */
+        .function-plot text { fill: #94a3b8 !important; font-family: 'Outfit', sans-serif !important; }
+        .function-plot path.line { stroke-width: 3px !important; stroke-linecap: round; }
+        .function-plot .domain { stroke: #475569 !important; stroke-width: 2px !important; }
+        .function-plot .tick line { stroke: rgba(255,255,255,0.05) !important; }
+        .function-plot .origin { stroke: #94a3b8 !important; }
+
+        /* --- 2. NAVBAR --- */
+        .navbar {
+            position: fixed; top: 0; left: 0; width: 100%;
+            background: rgba(10, 14, 23, 0.9); backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--glass-border); z-index: 1000; height: 80px;
+            display: flex; align-items: center;
+        }
+
+        .nav-container {
+            width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem; font-weight: 800; color: white;
+            text-decoration: none; letter-spacing: -0.5px;
+            background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        .desktop-menu { display: flex; gap: 2rem; }
+        .desktop-link {
+            color: var(--text-muted); text-decoration: none; font-weight: 500; font-size: 1rem; position: relative; padding: 5px 0;
+        }
+        .desktop-link:hover { color: #fff; }
+        .desktop-link.active { color: #a855f7; font-weight: 700; }
+        .desktop-link.active::after {
+            content: ''; position: absolute; bottom: -5px; left: 0; width: 100%; height: 2px;
+            background: var(--primary-gradient); border-radius: 2px;
+        }
+
+        .hamburger { font-size: 1.5rem; color: white; cursor: pointer; display: none; padding: 10px; }
+        
+        .sidebar {
+            position: fixed; top: 0; right: -100%; width: 280px; height: 100vh;
+            background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(20px);
+            border-left: 1px solid var(--glass-border);
+            display: flex; flex-direction: column; padding: 6rem 2rem 2rem; gap: 1rem;
+            z-index: 999; box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+        }
+        .sidebar.active { right: 0; }
+        .sidebar-close { position: absolute; top: 25px; right: 25px; font-size: 1.8rem; cursor: pointer; color: var(--text-muted); }
+
+        .mobile-link {
+            text-decoration: none; color: var(--text-muted); font-weight: 500; font-size: 1.1rem;
+            padding: 12px 20px; border-radius: 12px; display: flex; align-items: center; gap: 15px;
+        }
+        .mobile-link.active {
+            background: rgba(168, 85, 247, 0.15); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.3);
+        }
+
+        /* --- 3. PAGE STYLES --- */
+        .page-header { text-align: center; margin-bottom: 3rem; animation: fadeIn 0.8s ease; padding: 0 1rem; }
+        .page-title { 
+            font-size: clamp(1.8rem, 5vw, 3rem); font-weight: 800; margin-bottom: 1rem; line-height: 1.2;
+            background: linear-gradient(to right, #fff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .page-desc { 
+            color: var(--text-muted); font-size: clamp(0.9rem, 2.5vw, 1.1rem); max-width: 700px; margin: 0 auto; line-height: 1.6; 
+        }
+
+        .page-section { display: none; padding: 2rem 1rem; max-width: 1200px; margin: 0 auto; animation: slideUp 0.5s ease; }
+        .page-section.active-page { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Grid */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+        
+        .glass-card {
+            background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px;
+            padding: 1.5rem; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            position: relative; overflow: hidden; display: flex; flex-direction: column;
+        }
+        .glass-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(124, 58, 237, 0.15); }
+
+        .materi-icon {
+            width: 50px; height: 50px; background: rgba(255,255,255,0.05); border-radius: 14px; 
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; color: #c084fc; margin-bottom: 1rem; border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .glass-card h3 { font-size: 1.2rem; margin: 0 0 0.5rem 0; color: white; }
+        .glass-card p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem; flex-grow: 1; line-height: 1.6; }
+
+        .link-text {
+            display: inline-flex; align-items: center; gap: 8px; margin-top: auto;
+            color: #c084fc; font-weight: 600; text-decoration: none; cursor: pointer; font-size: 0.9rem;
+        }
+        .link-text:hover { color: #fff; gap: 12px; }
+
+        /* --- 4. CALCULATOR & SCANNER --- */
+        .calc-wrapper { background: var(--glass-bg); padding: 1.5rem; border-radius: 20px; border: 1px solid var(--glass-border); }
+        .scan-area {
+            border: 2px dashed var(--glass-border); border-radius: 12px; padding: 2rem 1.5rem; text-align: center; margin-bottom: 2rem; background: rgba(255,255,255,0.02); transition: all 0.3s; position: relative;
+        }
+        .scan-area:hover { border-color: #a855f7; background: rgba(168, 85, 247, 0.05); }
+        .scan-label { cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 10px; color: var(--text-muted); }
+        .scan-icon { font-size: 2.5rem; color: #a855f7; margin-bottom: 10px; transition: transform 0.3s; }
+        .scan-area:hover .scan-icon { transform: scale(1.1); }
+        
+        #scan-preview-container { margin-top: 15px; display: none; justify-content: center; }
+        #scan-preview { max-width: 100%; max-height: 200px; border-radius: 8px; border: 1px solid var(--glass-border); }
+        #ocr-status { font-size: 0.9rem; margin-top: 10px; font-weight: 600; color: #a855f7; min-height: 20px; }
+
+        label { display: block; margin-bottom: 0.5rem; color: var(--text-accent); font-weight: 600; font-size: 0.9rem; }
+        
+        select, input, textarea {
+            width: 100%; padding: 14px; background: rgba(15, 23, 42, 0.6); 
+            border: 1px solid var(--glass-border); border-radius: 12px; 
+            color: white; font-family: 'Outfit', sans-serif; font-size: 1rem;
+        }
+        select:focus, input:focus, textarea:focus { outline: none; border-color: #a855f7; box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2); }
+        
+        .btn-gradient {
+            width: 100%; padding: 14px; background: var(--primary-gradient);
+            color: white; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer;
+            box-shadow: 0 4px 15px var(--primary-glow); margin-top: 1rem;
+        }
+        .btn-gradient:hover { box-shadow: 0 6px 25px rgba(168, 85, 247, 0.6); transform: translateY(-2px); }
+        .btn-gradient:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        .result-box {
+            background: #ffffff; color: #1e293b; padding: 1.5rem; border-radius: 16px; margin-top: 2rem; display: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); font-family: 'Times New Roman', serif; position: relative;
+        }
+        .result-box::before { content: ''; position: absolute; top: 0; left: 0; bottom: 0; width: 6px; background: var(--primary-gradient); border-radius: 16px 0 0 16px; }
+
+        .step-container { margin-top: 1.5rem; font-family: 'Outfit', sans-serif; }
+        .step-item { border-bottom: 1px solid #eee; padding: 12px 0; font-size: 1rem; color: #334155; }
+        .step-title { font-weight: 700; color: #7c3aed; font-size: 0.9rem; text-transform: uppercase; margin-bottom: 5px; }
+
+        .visual-box { width: 100%; height: 350px; background: rgba(15, 23, 42, 0.8); border-radius: 12px; margin-top: 1.5rem; overflow: hidden; border: 1px solid var(--glass-border); }
+        .btn-back {
+            background: rgba(255,255,255,0.1); width: 40px; height: 40px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; margin-bottom: 1rem;
+        }
+
+        /* --- 5. TEAM STYLES --- */
+        .team-card {
+            background: var(--glass-bg); padding: 2rem 1rem; border-radius: 24px;
+            border: 1px solid var(--glass-border); text-align: center;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .avatar { 
+            width: 120px; height: 120px; border-radius: 50%; padding: 4px; 
+            background: var(--primary-gradient); margin-bottom: 1.5rem; position: relative;
+        }
+        .avatar-img {
+            width: 100%; height: 100%; object-fit: cover; object-position: center;
+            border-radius: 50%; border: 4px solid #0f172a; background-color: #fff; display: block;
+        }
+        .role-badge {
+            background: rgba(168, 85, 247, 0.15); color: #d8b4fe;
+            padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; margin-top: 0.5rem; text-transform: uppercase;
+        }
+
+        /* --- 6. FEEDBACK ANIMATION STYLES (NEW) --- */
+        .feedback-rating { display: flex; justify-content: center; gap: 10px; margin-bottom: 1rem; }
+        .star-icon { font-size: 2rem; color: #334155; cursor: pointer; transition: color 0.2s; }
+        .star-icon:hover, .star-icon.active { color: #fbbf24; }
+
+        /* Container Sukses */
+        #feedback-success-msg {
+            display: none; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        /* Animasi Centang Bulat */
+        .checkmark-circle {
+            width: 80px; height: 80px; position: relative; display: inline-block; vertical-align: top; margin-bottom: 20px;
+        }
+        .checkmark-circle .background {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            background: var(--success-color);
+            position: absolute;
+            transform: scale(0);
+            animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+        .checkmark-circle .checkmark {
+            border-radius: 5px;
+            position: absolute; 
+            transform: rotate(45deg);
+            width: 25px; height: 45px;
+            background: transparent;
+            border-width: 0 5px 5px 0; border-style: solid; border-color: #fff;
+            top: 12px; left: 28px;
+            opacity: 0;
+            animation: checkmarkDraw 0.3s ease 0.4s forwards; /* Delay biar background muncul dulu */
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0); opacity: 0; }
+            80% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes checkmarkDraw {
+            0% { height: 0; width: 0; opacity: 0; }
+            50% { height: 45px; width: 0; opacity: 1; }
+            100% { height: 45px; width: 25px; opacity: 1; }
+        }
+
+        /* Teks Sukses */
+        .success-text h3 { color: white; margin: 0; font-size: 1.5rem; }
+        .success-text p { color: var(--text-muted); margin-top: 5px; }
+
+        /* --- MEDIA QUERIES --- */
+        @media (max-width: 768px) {
+            .desktop-menu { display: none; } 
+            .hamburger { display: block; }
+            .nav-container { padding: 0 1.2rem; }
+            .grid-container { grid-template-columns: 1fr; }
+            .calc-wrapper { padding: 1.2rem; }
+            #extra-inputs { flex-direction: column; gap: 1rem !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" onclick="switchPage('home')" class="logo">Kalkulus<span>Pro</span></a>
+            
+            <div class="desktop-menu">
+                <a href="#" class="desktop-link active" onclick="switchPage('home')" id="dt-link-home">Materi</a>
+                <a href="#" class="desktop-link" onclick="switchPage('calculator')" id="dt-link-calc">Kalkulator</a>
+                <a href="#" class="desktop-link" onclick="switchPage('feedback')" id="dt-link-feedback">Feedback</a>
+                <a href="#" class="desktop-link" onclick="switchPage('about')" id="dt-link-about">Tim Pengembang</a>
+            </div>
+
+            <i class="fa-solid fa-bars-staggered hamburger" id="hamburger-btn"></i>
+        </div>
+    </nav>
+
+    <!-- SIDEBAR MOBILE -->
+    <div class="sidebar" id="sidebar">
+        <i class="fa-solid fa-xmark sidebar-close" id="sidebar-close-btn"></i>
+        <div style="margin-bottom: 2rem; padding-left: 1rem; opacity: 0.6; font-size: 0.9rem; letter-spacing: 1px;">MENU UTAMA</div>
+        
+        <a href="#" class="mobile-link active" onclick="switchPage('home')" id="mb-link-home">
+            <i class="fa-solid fa-layer-group"></i> Materi Belajar
+        </a>
+        <a href="#" class="mobile-link" onclick="switchPage('calculator')" id="mb-link-calc">
+            <i class="fa-solid fa-calculator"></i> Kalkulator & Grafik
+        </a>
+        <a href="#" class="mobile-link" onclick="switchPage('feedback')" id="mb-link-feedback">
+            <i class="fa-solid fa-star"></i> Feedback
+        </a>
+        <a href="#" class="mobile-link" onclick="switchPage('about')" id="mb-link-about">
+            <i class="fa-solid fa-users-viewfinder"></i> Tim Pengembang
+        </a>
+    </div>
+
+    <!-- 1. HALAMAN BERANDA -->
+    <section id="home" class="page-section active-page">
+        <div class="page-header">
+            <h1 class="page-title">Program Kalkulus Kelompok Satu</h1>
+            <p class="page-desc">
+                Program ini dibuat sebagai bagian dari rangkaian tugas besar akhir Mata kuliah Kalkulus, 
+                Program studi Pendidikan Ilmu Komputer, Universitas Pendidikan Indonesia.
+            </p>
+        </div>
+
+        <div class="grid-container">
+            <div class="glass-card">
+                <div class="materi-icon"><i class="fa-solid fa-hashtag"></i></div>
+                <h3>Sistem Bilangan</h3>
+                <p>Himpunan bilangan real, sifat urutan, interval, dan pertidaksamaan nilai mutlak.</p>
+                <div onclick="openDetail('bilangan')" class="link-text">Pelajari <i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+
+            <div class="glass-card">
+                <div class="materi-icon"><i class="fa-solid fa-wave-square"></i></div>
+                <h3>Fungsi & Grafik</h3>
+                <p>Relasi, domain, range, jenis fungsi (aljabar & transenden), dan transformasi grafik.</p>
+                <div onclick="openDetail('fungsi')" class="link-text">Pelajari <i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+
+            <div class="glass-card">
+                <div class="materi-icon"><i class="fa-solid fa-infinity"></i></div>
+                <h3>Limit Fungsi</h3>
+                <p>Definisi formal, limit kiri/kanan, teorema limit, dan kekontinuan fungsi.</p>
+                <div onclick="openDetail('limit')" class="link-text">Pelajari <i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+
+            <div class="glass-card">
+                <div class="materi-icon"><i class="fa-solid fa-turn-down"></i></div>
+                <h3>Turunan</h3>
+                <p>Definisi turunan, aturan rantai, turunan implisit, dan aplikasi turunan.</p>
+                <div onclick="openDetail('turunan')" class="link-text">Pelajari <i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+
+            <div class="glass-card">
+                <div class="materi-icon"><i class="fa-solid fa-draw-polygon"></i></div>
+                <h3>Integral Tentu</h3>
+                <p>Jumlah Riemann, Teorema Dasar Kalkulus, dan teknik pengintegralan.</p>
+                <div onclick="openDetail('integral')" class="link-text">Pelajari <i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+
+            <div class="glass-card">
+                <div class="materi-icon"><i class="fa-solid fa-shapes"></i></div>
+                <h3>Volume Benda Putar</h3>
+                <p>Metode cakram, cincin, dan kulit tabung untuk menghitung volume.</p>
+                <div onclick="openDetail('volume')" class="link-text">Pelajari <i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. HALAMAN DETAIL MATERI -->
+    <section id="detail-materi" class="page-section">
+        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+            <div class="btn-back" onclick="switchPage('home')"><i class="fa-solid fa-arrow-left"></i></div>
+            <h2 id="detail-title" style="margin:0; font-size: 1.5rem; line-height: 1.3;">Judul Materi</h2>
+        </div>
+
+        <div class="glass-card" style="margin-bottom: 2rem;">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:1rem; color:#a855f7;">
+                <i class="fa-solid fa-book-open"></i> <span style="font-weight:700; letter-spacing:1px;">MATERI LENGKAP</span>
+            </div>
+            <p id="detail-desc" style="line-height:1.8; color:var(--text-accent); font-size:1rem; text-align: justify;"></p>
+            <div style="margin-top:1.5rem;">
+                <h4 style="color:white; margin-bottom:1rem;">Konsep & Teorema Utama:</h4>
+                <ul id="detail-points" style="list-style:none; padding:0; display:grid; gap:10px;"></ul>
+            </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:2rem;">
+            <div class="glass-card">
+                <div style="font-weight:700; margin-bottom:1rem;">Rumus Penting</div>
+                <div id="detail-formula" style="background:rgba(255,255,255,0.05); padding:1rem; border-radius:10px; margin-bottom:1rem; font-size:1.1em;"></div>
+                <div style="font-weight:700; margin-bottom:0.5rem; margin-top:1rem;">Contoh Soal</div>
+                <div id="detail-example" style="font-size:1em; line-height:1.6; color:var(--text-muted);"></div>
+            </div>
+            
+            <div class="glass-card">
+                <div style="font-weight:700;">Visualisasi Grafik <span id="graph-equation" style="color:#a855f7; font-size:0.9rem;"></span></div>
+                <div id="detail-graph" class="visual-box"></div>
+            </div>
+        </div>
+
+        <button class="btn-gradient" onclick="goToCalculatorFromDetail()" style="margin-top: 2rem;">
+            Coba Hitung Sekarang <i class="fa-solid fa-rocket" style="margin-left:8px;"></i>
+        </button>
+    </section>
+
+    <!-- 3. HALAMAN KALKULATOR -->
+    <section id="calculator" class="page-section">
+        <div class="page-header">
+            <h1 class="page-title">Studio Kalkulus</h1>
+            <p class="page-desc">Scan soal atau input manual untuk mendapatkan solusi langkah demi langkah.</p>
+        </div>
+
+        <div class="glass-card" style="max-width: 800px; margin: 0 auto;">
+            <div class="scan-area">
+                <input type="file" id="scan-file" accept="image/*" style="display:none;" onchange="processImage(event)">
+                <label for="scan-file" class="scan-label">
+                    <i class="fa-solid fa-camera scan-icon"></i>
+                    <span>Klik untuk Scan Foto Soal / Screenshot</span>
+                </label>
+                <canvas id="scan-canvas" style="display:none;"></canvas>
+                <div id="scan-preview-container"><img id="scan-preview" src="" alt="Preview"></div>
+                <div id="ocr-status"></div>
+                <div style="font-size:0.8rem; color:#94a3b8; margin-top:10px;">Tips: Pastikan foto jelas dan hanya berisi rumus matematika.</div>
+            </div>
+
+            <div class="input-group">
+                <label>Pilih Operasi Matematika</label>
+                <select id="operation-select" onchange="toggleInputs()">
+                    <option value="simplify">Aljabar (Sederhanakan)</option>
+                    <option value="limit">Limit Fungsi (lim)</option>
+                    <option value="diff">Turunan (d/dx)</option>
+                    <option value="defint">Integral Tentu (Luas)</option>
+                    <option value="volume">Volume Benda Putar</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Fungsi f(x)</label>
+                <input type="text" id="expression" placeholder="Contoh: x^2 + 2*x">
+                <div id="ocr-warning" style="display:none; color:#f59e0b; font-size:0.85rem; margin-top:5px;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Teks soal terdeteksi. Harap hapus kata-kata dan sisakan rumusnya saja.
+                </div>
+            </div>
+
+            <div id="extra-inputs" style="display:none; gap:1.5rem; margin-bottom: 1.5rem;">
+                <div style="flex:1;">
+                    <label id="input-label-1">Batas</label>
+                    <input type="text" id="input-val-1" placeholder="0">
+                </div>
+                <div style="flex:1;" id="input-container-2">
+                    <label>Batas Atas</label>
+                    <input type="text" id="input-val-2" placeholder="1">
+                </div>
+            </div>
+
+            <button class="btn-gradient" onclick="calculate()">HITUNG PENYELESAIAN</button>
+        </div>
+
+        <div id="result-card" class="result-box" style="max-width: 800px; margin: 2rem auto 0 auto;">
+            <h3 style="color:#4f46e5; margin-top:0; border-bottom: 1px solid #eee; padding-bottom:10px;">Lembar Penyelesaian</h3>
+            <div id="steps-output" class="step-container"></div>
+            <div id="final-answer" style="margin-top:1.5rem; font-size:1.2rem; font-weight:bold; color:#a855f7;"></div>
+            <div style="margin-top:2rem; font-family:'Outfit', sans-serif;">
+                <strong>Visualisasi Kurva:</strong>
+                <div id="calc-graph" class="visual-box" style="border:1px solid #334155;"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. HALAMAN FEEDBACK (ANIMASI & FORM SUKSES) -->
+    <section id="feedback" class="page-section">
+        <div class="page-header">
+            <h1 class="page-title">Berikan Umpan Balik</h1>
+            <p class="page-desc">Pendapat Anda sangat berharga untuk pengembangan aplikasi ini.</p>
+        </div>
+
+        <div class="glass-card" style="max-width: 600px; margin: 0 auto; min-height: 400px; display: flex; align-items: center; justify-content: center;">
+            
+            <!-- FORM CONTENT -->
+            <div id="feedback-form-content" style="width: 100%;">
+                <div class="input-group">
+                    <label>Nama Anda</label>
+                    <input type="text" id="fb-name" placeholder="Nama Lengkap">
+                </div>
+                
+                <div class="input-group">
+                    <label>Rating Aplikasi</label>
+                    <div class="feedback-rating">
+                        <i class="fa-solid fa-star star-icon" onclick="setRating(1)"></i>
+                        <i class="fa-solid fa-star star-icon" onclick="setRating(2)"></i>
+                        <i class="fa-solid fa-star star-icon" onclick="setRating(3)"></i>
+                        <i class="fa-solid fa-star star-icon" onclick="setRating(4)"></i>
+                        <i class="fa-solid fa-star star-icon" onclick="setRating(5)"></i>
+                    </div>
+                    <input type="hidden" id="fb-rating" value="0">
+                </div>
+
+                <div class="input-group">
+                    <label>Pesan & Saran</label>
+                    <textarea id="fb-message" rows="5" placeholder="Tulis saran Anda di sini..." style="resize: vertical;"></textarea>
+                </div>
+
+                <button class="btn-gradient" onclick="submitFeedback()">Kirim Feedback</button>
+            </div>
+
+            <!-- SUCCESS MESSAGE (Hidden by default) -->
+            <div id="feedback-success-msg">
+                <div class="checkmark-circle">
+                    <div class="background"></div>
+                    <div class="checkmark"></div>
+                </div>
+                <div class="success-text">
+                    <h3>Terima Kasih!</h3>
+                    <p>Feedback Anda telah berhasil dikirim.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- 5. HALAMAN TEAM -->
+    <section id="about" class="page-section">
+        <div class="page-header">
+            <h1 class="page-title">Tim Pengembang</h1>
+            <p class="page-desc">Mahasiswa Pendidikan Ilmu Komputer UPI.</p>
+        </div>
+
+        <div class="grid-container" style="max-width: 1000px; margin: 0 auto;">
+            <div class="team-card">
+                <div class="avatar"><img src="aditya.jpg" alt="Aditya" class="avatar-img"></div>
+                <h3 style="margin:0; font-size:1.2rem;">Aditya Raya P.A</h3>
+                <div style="color:var(--text-muted); font-size:0.9rem; font-family:monospace; margin-top:5px;">NIM: 2507320</div>
+                <div class="role-badge">Project Manager</div>
+            </div>
+            <div class="team-card">
+                <div class="avatar"><img src="azka.jpg" alt="Azka" class="avatar-img"></div>
+                <h3 style="margin:0; font-size:1.2rem;">Azka Ramadhan</h3>
+                <div style="color:var(--text-muted); font-size:0.9rem; font-family:monospace; margin-top:5px;">NIM: 12334</div>
+                <div class="role-badge">Lead Developer</div>
+            </div>
+            <div class="team-card">
+                <div class="avatar"><img src="salsa.jpg" alt="Salsa" class="avatar-img"></div>
+                <h3 style="margin:0; font-size:1.2rem;">Salsa Nur Hafisah</h3>
+                <div style="color:var(--text-muted); font-size:0.9rem; font-family:monospace; margin-top:5px;">NIM: 2501960</div>
+                <div class="role-badge">UI/UX Designer</div>
+            </div>
+            <div class="team-card">
+                <div class="avatar"><img src="novi.jpg" alt="Novi" class="avatar-img"></div>
+                <h3 style="margin:0; font-size:1.2rem;">Novi Nur Azizah</h3>
+                <div style="color:var(--text-muted); font-size:0.9rem; font-family:monospace; margin-top:5px;">NIM: 2507647</div>
+                <div class="role-badge">Content Specialist</div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // --- 1. NAVIGASI ---
+        const sidebar = document.getElementById('sidebar');
+        const hamburgerBtn = document.getElementById('hamburger-btn');
+        const closeBtn = document.getElementById('sidebar-close-btn');
+
+        hamburgerBtn.addEventListener('click', (e) => { sidebar.classList.add('active'); e.stopPropagation(); });
+        closeBtn.addEventListener('click', () => sidebar.classList.remove('active'));
+        document.addEventListener('click', (e) => {
+            if (sidebar.classList.contains('active') && !sidebar.contains(e.target) && !hamburgerBtn.contains(e.target)) sidebar.classList.remove('active');
+        });
+
+        function switchPage(pageId) {
+            document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active-page'));
+            document.getElementById(pageId).classList.add('active-page');
+            sidebar.classList.remove('active');
+            updateActiveMenu(pageId);
+            window.scrollTo(0,0);
+        }
+
+        function updateActiveMenu(pageId) {
+            document.querySelectorAll('.desktop-link, .mobile-link').forEach(link => link.classList.remove('active'));
+            let suffix = (pageId === 'calculator') ? 'calc' : pageId;
+            const dt = document.getElementById('dt-link-' + suffix);
+            const mb = document.getElementById('mb-link-' + suffix);
+            if(dt) dt.classList.add('active');
+            if(mb) mb.classList.add('active');
+        }
+
+        // --- 2. DATA MATERI ---
+        const materialData = {
+            'bilangan': {
+                title: 'Sistem Bilangan & Pertidaksamaan',
+                desc: 'Sistem bilangan real ($\\mathbb{R}$) adalah fondasi dari seluruh analisis real dan kalkulus. Bilangan real mencakup bilangan rasional dan irasional. Sifat kelengkapan bilangan real memungkinkan kita melakukan operasi limit.',
+                points: [
+                    '<strong>Sifat Trikotomi:</strong> Untuk setiap $a, b \\in \\mathbb{R}$, berlaku salah satu: $a < b$, $a = b$, atau $a > b$.',
+                    '<strong>Interval:</strong> Contoh $(a, b) = \\{x \\mid a < x < b\\}$.',
+                    '<strong>Nilai Mutlak:</strong> $|x| = x$ jika $x \\ge 0$, dan $-x$ jika $x < 0$.'
+                ],
+                graphFn: 'abs(x)', graphEq: 'y = |x|',
+                formula: '$$ |x-a| < \\delta \\iff a-\\delta < x < a+\\delta $$',
+                example: 'Tentukan HP dari $|2x - 5| < 3$.<br><strong>Jawab:</strong><br>$$ -3 < 2x - 5 < 3 $$<br>$$ 2 < 2x < 8 $$<br>$$ 1 < x < 4 $$',
+                calcMode: 'simplify'
+            },
+            'fungsi': {
+                title: 'Fungsi & Grafik',
+                desc: 'Fungsi memetakan elemen domain ke range. Memahami grafik fungsi sangat penting untuk memvisualisasikan konsep limit dan turunan.',
+                points: [
+                    '<strong>Domain & Range:</strong> Daerah asal dan daerah hasil fungsi.',
+                    '<strong>Fungsi Genap/Ganjil:</strong> Simetri sumbu Y atau titik asal.',
+                    '<strong>Komposisi:</strong> $(f \\circ g)(x) = f(g(x))$.'
+                ],
+                graphFn: 'x^3', graphEq: 'y = x^3',
+                formula: '$$ D_{f \\circ g} = \\{x \\in D_g \\mid g(x) \\in D_f\\} $$',
+                example: 'Jika $f(x) = \\sqrt{x}$ dan $g(x) = 1-x^2$.<br>Domain $f \\circ g$ adalah $[-1, 1]$.',
+                calcMode: 'simplify'
+            },
+            'limit': {
+                title: 'Limit Fungsi',
+                desc: 'Limit menjelaskan perilaku fungsi $f(x)$ ketika $x$ mendekati suatu nilai $c$. Konsep ini mendasari turunan dan integral.',
+                points: [
+                    '<strong>Definisi:</strong> $\\lim_{x \\to c} f(x) = L$.',
+                    '<strong>Limit Kiri & Kanan:</strong> Harus sama agar limit ada.',
+                    '<strong>Kekontinuan:</strong> $\\lim_{x \\to c} f(x) = f(c)$.'
+                ],
+                graphFn: 'sin(x)/x', graphEq: 'y = sin(x)/x',
+                formula: '$$ \\lim_{x \\to 0} \\frac{\\sin x}{x} = 1 $$',
+                example: 'Hitung $\\lim_{x \\to 2} (x^2+1)$.<br>Jawab: $2^2 + 1 = 5$.',
+                calcMode: 'limit'
+            },
+            'turunan': {
+                title: 'Turunan (Diferensial)',
+                desc: 'Turunan mengukur laju perubahan sesaat (gradien garis singgung).',
+                points: [
+                    '<strong>Definisi:</strong> $f\'(x) = \\lim_{h \\to 0} \\frac{f(x+h)-f(x)}{h}$.',
+                    '<strong>Aturan Rantai:</strong> $\\frac{d}{dx}[f(g(x))] = f\'(g(x)) \\cdot g\'(x)$.',
+                    '<strong>Aplikasi:</strong> Optimasi, laju berkaitan.'
+                ],
+                graphFn: '2*x', graphEq: 'y = 2x',
+                formula: '$$ \\frac{d}{dx}(x^n) = nx^{n-1} $$',
+                example: 'Turunan dari $y = x^3$ adalah $3x^2$.',
+                calcMode: 'diff'
+            },
+            'integral': {
+                title: 'Integral Tentu',
+                desc: 'Integral tentu menghitung luas daerah di bawah kurva.',
+                points: [
+                    '<strong>Teorema Dasar Kalkulus:</strong> $\\int_a^b f(x) dx = F(b) - F(a)$.',
+                    '<strong>Sifat Linear:</strong> Integral penjumlahan adalah jumlah integral.'
+                ],
+                graphFn: 'x^2', graphEq: 'Area di bawah x^2',
+                formula: '$$ \\int_a^b f(x) dx = \\lim_{n \\to \\infty} \\sum_{i=1}^n f(x_i^*) \\Delta x $$',
+                example: '$\\int_0^3 2x dx = [x^2]_0^3 = 9$.',
+                calcMode: 'defint'
+            },
+            'volume': {
+                title: 'Volume Benda Putar',
+                desc: 'Menghitung volume benda solid yang diputar mengelilingi sumbu.',
+                points: [
+                    '<strong>Metode Cakram:</strong> $V = \\pi \\int_a^b [R(x)]^2 dx$.',
+                    '<strong>Metode Cincin:</strong> $V = \\pi \\int_a^b ([R(x)]^2 - [r(x)]^2) dx$.'
+                ],
+                graphFn: 'sqrt(x)', graphEq: 'y = √x',
+                formula: '$$ V = \\pi \\int_{a}^{b} [f(x)]^2 dx $$',
+                example: 'Volume $y=x$ diputar sumbu-x dari 0 ke 1:<br>$V = \\pi/3$.',
+                calcMode: 'volume'
+            }
+        };
+
+        // --- DETAIL PAGE LOGIC ---
+        function openDetail(key) {
+            const data = materialData[key];
+            if(!data) return;
+            document.getElementById('detail-title').innerText = data.title;
+            document.getElementById('detail-desc').innerHTML = data.desc;
+            const list = document.getElementById('detail-points');
+            list.innerHTML = '';
+            data.points.forEach(pt => list.innerHTML += `<li style="display:flex; gap:10px; margin-bottom:8px; color:var(--text-muted);"><i class="fa-solid fa-check-circle" style="color:#a855f7;"></i> <span>${pt}</span></li>`);
+            document.getElementById('detail-formula').innerHTML = data.formula;
+            document.getElementById('detail-example').innerHTML = data.example;
+            
+            MathJax.typesetPromise();
+            drawGraph('#detail-graph', data.graphFn);
+            switchPage('detail-materi');
+        }
+
+        function drawGraph(id, expr) {
+            try {
+                document.querySelector(id).innerHTML = '';
+                functionPlot({ 
+                    target: id, 
+                    width: document.querySelector(id).offsetWidth, 
+                    height: 320, 
+                    grid: true, 
+                    nSamples: 4000, 
+                    data: [{ 
+                        fn: expr, 
+                        color: '#a855f7',
+                        strokeWidth: 3
+                    }],
+                    xAxis: {domain: [-10, 10], color: '#94a3b8'},
+                    yAxis: {domain: [-10, 10], color: '#94a3b8'}
+                });
+            } catch(e){}
+        }
+
+        function goToCalculatorFromDetail() { switchPage('calculator'); }
+
+        // --- 3. FEEDBACK LOGIC (DENGAN ANIMASI) ---
+        function setRating(n) {
+            document.getElementById('fb-rating').value = n;
+            const stars = document.querySelectorAll('.star-icon');
+            stars.forEach((s, index) => {
+                if(index < n) s.classList.add('active'); else s.classList.remove('active');
+            });
+        }
+
+        function submitFeedback() {
+            const name = document.getElementById('fb-name').value;
+            const msg = document.getElementById('fb-message').value;
+            const rating = document.getElementById('fb-rating').value;
+            if(!name || !msg) { alert("Mohon isi nama dan pesan Anda."); return; }
+            
+            const btn = document.querySelector('#feedback .btn-gradient');
+            const formContent = document.getElementById('feedback-form-content');
+            const successMsg = document.getElementById('feedback-success-msg');
+
+            btn.innerText = "Mengirim..."; btn.disabled = true;
+            
+            // Menggunakan Formspree untuk mengirim email
+            fetch("https://formspree.io/f/xjknqppb", { 
+                method: "POST", headers: {'Accept': 'application/json','Content-Type': 'application/json'},
+                body: JSON.stringify({ Nama: name, Rating: rating + " Bintang", Pesan: msg })
+            }).then(r => {
+                if(r.ok) { 
+                    // Tampilkan Animasi Sukses
+                    formContent.style.display = 'none';
+                    successMsg.style.display = 'flex';
+                    
+                    // Reset setelah 3 detik
+                    setTimeout(() => {
+                        document.getElementById('fb-name').value=''; 
+                        document.getElementById('fb-message').value=''; 
+                        setRating(0);
+                        
+                        successMsg.style.display = 'none';
+                        formContent.style.display = 'block';
+                        btn.innerText = "Kirim Feedback"; 
+                        btn.disabled = false;
+                        
+                        switchPage('home'); // Kembali ke home
+                    }, 3000);
+                }
+                else { alert("Gagal mengirim."); btn.innerText = "Kirim Feedback"; btn.disabled = false; }
+            }).catch(e => { alert("Error jaringan."); btn.innerText = "Kirim Feedback"; btn.disabled = false; });
+        }
+
+        // --- 4. CALCULATOR & OCR ---
+        function processImage(event) { 
+            const file = event.target.files[0]; if(!file) return;
+            const status = document.getElementById('ocr-status');
+            const preview = document.getElementById('scan-preview');
+            const container = document.getElementById('scan-preview-container');
+            const warning = document.getElementById('ocr-warning');
+            status.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mengoptimalkan Gambar...';
+            container.style.display = 'flex'; warning.style.display = 'none';
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image(); img.src = e.target.result;
+                img.onload = function() {
+                    preview.src = e.target.result;
+                    const canvas = document.getElementById('scan-canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = img.width; canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    runOCR(canvas.toDataURL());
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function runOCR(imageData) {
+            const status = document.getElementById('ocr-status');
+            const warning = document.getElementById('ocr-warning');
+            status.innerHTML = '<i class="fa-solid fa-brain fa-spin"></i> Membaca Teks...';
+            Tesseract.recognize(imageData, 'eng', { logger: m => { if(m.status==='recognizing text') status.innerText = `Scan: ${Math.round(m.progress * 100)}%`; } })
+            .then(({ data: { text } }) => {
+                let clean = text.toLowerCase();
+                const stopWords = ["hitunglah", "nilai", "dari", "tentukan", "berikut", "limit", "fungsi", "aljabar"];
+                stopWords.forEach(word => { clean = clean.replaceAll(word, ""); });
+                clean = clean.replace(/\n/g, " ").replace(/[:;?!]/g, "").replace(/o/g, "0").replace(/l/g, "1").replace(/_/g, "-").replace(/\s+/g, " ").trim();
+                document.getElementById('expression').value = clean;
+                if (/[a-z]{3,}/.test(clean)) { warning.style.display = 'block'; status.innerHTML = `<span style="color:#f59e0b">Selesai (Perlu Edit)</span>`; } 
+                else { status.innerHTML = `<span style="color:#10b981">Selesai</span>`; }
+            }).catch(err => { status.innerHTML = '<span style="color:red">Gagal membaca.</span>'; });
+        }
+
+        function toggleInputs() {
+            const op = document.getElementById('operation-select').value;
+            const extraInputs = document.getElementById('extra-inputs');
+            const input2 = document.getElementById('input-container-2');
+            const label1 = document.getElementById('input-label-1');
+            if (op === 'simplify' || op === 'diff') { extraInputs.style.display = 'none'; } 
+            else {
+                extraInputs.style.display = 'flex';
+                if (window.innerWidth <= 768) { extraInputs.style.flexDirection = 'column'; extraInputs.style.gap = '1rem'; }
+                if (op === 'limit') { label1.innerText = "Mendekati (c)"; input2.style.display = 'none'; } 
+                else { label1.innerText = "Batas Bawah (a)"; input2.style.display = 'block'; }
+            }
+        }
+
+        function calculate() {
+            const op = document.getElementById('operation-select').value;
+            const expr = document.getElementById('expression').value;
+            const resCard = document.getElementById('result-card');
+            const stepsOut = document.getElementById('steps-output');
+            const finalOut = document.getElementById('final-answer');
+            if(!expr) { alert("Masukkan fungsi!"); return; }
+            if (/[a-z]{4,}/i.test(expr) && !/sqrt|sin|cos|tan|log/.test(expr)) { alert("Input mengandung teks non-matematika."); return; }
+
+            try {
+                let steps = "", finalRes = "";
+                if (op === 'volume') {
+                    const a = document.getElementById('input-val-1').value || '0', b = document.getElementById('input-val-2').value || '1';
+                    let funcSquared = `(${expr})^2`;
+                    let definiteVal = nerdamer(`defint(${funcSquared}, ${a}, ${b})`);
+                    let numericVal = eval(definiteVal.toString()) * Math.PI;
+                    steps = `<div class="step-item"><div class="step-title">1. Rumus</div>$$ V = \\pi \\int_{a}^{b} [f(x)]^2 dx $$</div><div class="step-item"><div class="step-title">2. Integral</div>$$ ${definiteVal.toTeX()} $$</div>`;
+                    finalRes = `$$ V \\approx ${numericVal.toFixed(2)} $$`;
+                } else if (op === 'defint') {
+                    const a = document.getElementById('input-val-1').value || '0', b = document.getElementById('input-val-2').value || '1';
+                    let res = nerdamer(`defint(${expr}, ${a}, ${b})`);
+                    steps = `<div class="step-item"><div class="step-title">Integral Tentu</div>$$ \\int_{${a}}^{${b}} (${expr}) dx $$</div>`;
+                    finalRes = `$$ = ${res.toTeX()} $$`;
+                } else if (op === 'diff') {
+                    let res = nerdamer(`diff(${expr}, x)`);
+                    steps = `<div class="step-item"><div class="step-title">Turunan</div>$$ \\frac{d}{dx} (${expr}) $$</div>`;
+                    finalRes = `$$ f'(x) = ${res.toTeX()} $$`;
+                } else if (op === 'limit') {
+                    const c = document.getElementById('input-val-1').value || '0';
+                    let res = nerdamer(`limit(${expr}, x, ${c})`);
+                    steps = `<div class="step-item">Limit saat x -> ${c}</div>`;
+                    finalRes = `$$ = ${res.toTeX()} $$`;
+                } else {
+                    let res = nerdamer(`simplify(${expr})`);
+                    steps = `<div class="step-item">Penyederhanaan</div>`;
+                    finalRes = `$$ ${res.toTeX()} $$`;
+                }
+                resCard.style.display = 'block';
+                stepsOut.innerHTML = steps; finalOut.innerHTML = finalRes;
+                MathJax.typesetPromise([stepsOut, finalOut]);
+                drawGraph('#calc-graph', expr);
+            } catch(e) { alert("Input tidak valid."); }
+        }
+
+        toggleInputs();
+    </script>
+</body>
+</html>
