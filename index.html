@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kalkulus Pro - Kelompok Satu</title>
     
-    <!-- Fonts: Outfit -->
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -17,12 +17,11 @@
                 displayMath: [['$$', '$$'], ['\\[', '\\]']],
                 processEscapes: true
             },
-            svg: { fontCache: 'global' },
             options: { enableMenu: false }
         };
     </script>
 
-    <!-- Libraries Kalkulus & Grafik -->
+    <!-- Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/nerdamer@latest/nerdamer.core.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/nerdamer@latest/Algebra.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/nerdamer@latest/Calculus.js"></script>
@@ -32,14 +31,13 @@
     <script src="https://unpkg.com/function-plot@1/dist/function-plot.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
 
-    <!-- FIREBASE VERSION 8 (STABIL UNTUK HTML) -->
+    <!-- Firebase V8 -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
     <style>
-        /* --- CONFIG VARS --- */
         :root {
-            /* DARK MODE DEFAULT */
             --bg-body: #0a0e17; 
             --primary-gradient: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
             --primary-glow: rgba(168, 85, 247, 0.5);
@@ -47,192 +45,63 @@
             --glass-border: rgba(255, 255, 255, 0.08);
             --text-main: #ffffff;
             --text-muted: #94a3b8;
-            --text-accent: #e0e7ff;
             --input-bg: rgba(15, 23, 42, 0.6);
             --chat-me: #6366f1;
             --chat-other: #1e293b;
             --navbar-bg: rgba(10, 14, 23, 0.95);
             --success-color: #10b981;
-            --math-color: #e0e7ff;
-            --graph-axis: #94a3b8;
-            --border-graph: #334155;
         }
 
-        /* LIGHT MODE */
         [data-theme="light"] {
             --bg-body: #f8fafc;
-            --primary-gradient: linear-gradient(135deg, #9333ea 0%, #4f46e5 100%);
-            --primary-glow: rgba(147, 51, 234, 0.3);
             --glass-bg: rgba(255, 255, 255, 0.85);
             --glass-border: rgba(0, 0, 0, 0.1);
             --text-main: #1e293b;
             --text-muted: #64748b;
-            --text-accent: #334155;
             --input-bg: #ffffff;
-            --chat-me: #4f46e5;
             --chat-other: #e2e8f0;
             --navbar-bg: rgba(255, 255, 255, 0.95);
-            --success-color: #059669;
-            --math-color: #1e293b;
-            --graph-axis: #475569;
-            --border-graph: #cbd5e1;
         }
 
-        * { box-sizing: border-box; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
-        html { font-size: 16px; scroll-behavior: smooth; }
+        * { box-sizing: border-box; transition: background-color 0.3s, color 0.3s; }
+        body { font-family: 'Outfit', sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; padding-top: 80px; overflow-x: hidden; }
 
-        body {
-            font-family: 'Outfit', sans-serif;
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            margin: 0;
-            padding-top: 80px;
-            overflow-x: hidden;
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(124, 58, 237, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.15) 0%, transparent 40%);
-        }
-
-        /* Gradient Text */
-        .gradient-text {
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* MathJax & Graph Fixes */
-        mjx-container { font-size: 1.15em !important; color: var(--math-color) !important; outline: none; }
-        .function-plot text { fill: var(--graph-axis) !important; font-family: 'Outfit', sans-serif !important; }
-        .function-plot path.line { stroke-width: 3px !important; stroke-linecap: round; }
-        .function-plot .domain { stroke: var(--graph-axis) !important; stroke-width: 2px !important; }
-        .function-plot .tick line { stroke: rgba(128,128,128,0.2) !important; }
-        .function-plot .origin { stroke: var(--graph-axis) !important; }
-
-        /* --- NAVBAR --- */
-        .navbar {
-            position: fixed; top: 0; left: 0; width: 100%;
-            background: var(--navbar-bg); backdrop-filter: blur(15px);
-            border-bottom: 1px solid var(--glass-border); z-index: 1000; height: 80px;
-            display: flex; align-items: center;
-        }
+        .navbar { position: fixed; top: 0; width: 100%; background: var(--navbar-bg); backdrop-filter: blur(15px); border-bottom: 1px solid var(--glass-border); z-index: 1000; height: 80px; display: flex; align-items: center; }
         .nav-container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: flex; justify-content: space-between; align-items: center; }
-        
-        .logo { font-size: 1.5rem; font-weight: 800; color: var(--text-main); text-decoration: none; }
+        .logo { font-size: 1.5rem; font-weight: 800; text-decoration: none; color: var(--text-main); }
         .logo span { background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .desktop-menu { display: flex; gap: 1.2rem; }
+        .desktop-link { color: var(--text-muted); text-decoration: none; font-weight: 500; cursor: pointer; position: relative; padding: 5px 0; font-size: 0.9rem; }
+        .desktop-link.active { color: #a855f7; font-weight: 700; border-bottom: 2px solid #a855f7; }
 
-        .nav-actions { display: flex; align-items: center; gap: 20px; }
+        .page-section { display: none; padding: 2rem 1rem; max-width: 1200px; margin: 0 auto; animation: slideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
+        .active-page { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        .glass-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; padding: 1.8rem; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1); margin-bottom: 1.5rem; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
         
-        .desktop-menu { display: flex; gap: 2rem; }
-        .desktop-link { color: var(--text-muted); text-decoration: none; font-weight: 500; font-size: 1rem; position: relative; padding: 5px 0; }
-        .desktop-link:hover, .desktop-link.active { color: #a855f7; font-weight: 700; }
-        .desktop-link.active::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 100%; height: 2px; background: var(--primary-gradient); border-radius: 2px; }
+        .btn-gradient { width: 100%; padding: 14px; background: var(--primary-gradient); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s; margin-top: 1rem; }
+        .btn-gradient:hover { transform: translateY(-3px); box-shadow: 0 10px 20px var(--primary-glow); }
 
-        #theme-toggle { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-main); padding: 5px; transition: transform 0.2s; }
-        #theme-toggle:hover { transform: scale(1.1); color: #a855f7; }
+        input, select, textarea { width: 100%; padding: 14px; background: var(--input-bg); border: 1px solid var(--glass-border); border-radius: 12px; color: var(--text-main); margin-bottom: 10px; font-family: inherit; font-size: 1rem; }
 
-        .hamburger { font-size: 1.5rem; color: var(--text-main); cursor: pointer; display: none; }
+        .visual-box { width: 100%; height: 380px; background: var(--input-bg); border-radius: 15px; border: 1px solid var(--glass-border); overflow: hidden; position: relative; }
+        .function-plot path.line { stroke-dasharray: 2500; stroke-dashoffset: 2500; animation: drawLine 2.5s ease-out forwards; }
+        @keyframes drawLine { to { stroke-dashoffset: 0; } }
 
-        /* Sidebar */
-        .sidebar {
-            position: fixed; top: 0; right: -100%; width: 280px; height: 100vh;
-            background: var(--navbar-bg); backdrop-filter: blur(20px); border-left: 1px solid var(--glass-border);
-            display: flex; flex-direction: column; padding: 6rem 2rem 2rem; gap: 1rem; z-index: 999;
-            box-shadow: -10px 0 30px rgba(0,0,0,0.1);
-        }
-        .sidebar.active { right: 0; }
-        .sidebar-close { position: absolute; top: 25px; right: 25px; font-size: 1.8rem; cursor: pointer; color: var(--text-muted); }
-        .mobile-link { color: var(--text-muted); text-decoration: none; font-weight: 500; padding: 12px 20px; border-radius: 12px; display: flex; align-items: center; gap: 15px; }
-        .mobile-link.active { background: rgba(168, 85, 247, 0.15); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.3); }
-
-        /* --- UI COMPONENTS --- */
-        .page-header { text-align: center; margin-bottom: 3rem; animation: fadeIn 0.8s ease; padding: 0 1rem; }
-        .page-title { 
-            font-size: clamp(1.8rem, 5vw, 3rem); font-weight: 800; margin-bottom: 1rem; 
-            background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
-        }
-        .page-desc { color: var(--text-muted); font-size: clamp(0.9rem, 2.5vw, 1.1rem); max-width: 700px; margin: 0 auto; line-height: 1.6; }
-        
-        .page-section { display: none; padding: 2rem 1rem; max-width: 1200px; margin: 0 auto; animation: slideUp 0.5s ease; }
-        .page-section.active-page { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        .glass-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; padding: 1.5rem; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1); }
-        
-        .btn-gradient {
-            width: 100%; padding: 14px; background: var(--primary-gradient);
-            color: white; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer;
-            box-shadow: 0 4px 15px var(--primary-glow); margin-top: 1rem;
-        }
-        .btn-gradient:hover { box-shadow: 0 6px 25px rgba(168, 85, 247, 0.6); transform: translateY(-2px); }
-        .btn-gradient:disabled { opacity: 0.7; cursor: not-allowed; }
-
-        input, select, textarea {
-            width: 100%; padding: 14px; background: var(--input-bg); 
-            border: 1px solid var(--glass-border); border-radius: 12px; 
-            color: var(--text-main); font-family: 'Outfit', sans-serif; font-size: 1rem; margin-bottom: 10px;
-        }
-        input:focus, select:focus, textarea:focus { outline: none; border-color: #a855f7; box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2); }
-
-        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
-        .materi-icon { width: 50px; height: 50px; background: rgba(168, 85, 247, 0.1); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #a855f7; margin-bottom: 1rem; }
-        .link-text { display: inline-flex; align-items: center; gap: 8px; margin-top: auto; color: #a855f7; font-weight: 600; cursor: pointer; }
-
-        /* Chat Styles */
-        #chat-login-area { text-align: center; padding: 2rem; }
-        #chat-interface { display: none; flex-direction: column; height: 500px; }
-        .chat-messages {
-            flex: 1; overflow-y: auto; padding: 1rem; background: var(--input-bg); border-radius: 12px;
-            margin-bottom: 1rem; display: flex; flex-direction: column; gap: 12px; min-height: 300px;
-        }
-        .chat-messages::-webkit-scrollbar { width: 6px; }
-        .chat-messages::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.1); border-radius: 10px; }
-        .chat-messages::-webkit-scrollbar-thumb { background: rgba(168, 85, 247, 0.5); border-radius: 10px; }
-        .chat-messages::-webkit-scrollbar-thumb:hover { background: rgba(168, 85, 247, 0.7); }
-        
-        .message-bubble {
-            max-width: 80%; padding: 12px 16px; border-radius: 18px; font-size: 0.95rem; word-wrap: break-word;
-            position: relative; animation: messageAppear 0.3s ease;
-        }
-        @keyframes messageAppear {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
+        .chat-messages { height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 12px; margin-bottom: 15px; }
+        .message-bubble { max-width: 85%; padding: 10px 15px; border-radius: 18px; font-size: 0.95rem; }
         .msg-self { align-self: flex-end; background: var(--primary-gradient); color: white; border-bottom-right-radius: 4px; }
-        .msg-other { align-self: flex-start; background: var(--chat-other); border: 1px solid var(--glass-border); color: var(--text-main); border-bottom-left-radius: 4px; }
-        .msg-sender { font-size: 0.8rem; opacity: 0.9; font-weight: 600; display: block; margin-bottom: 4px; }
-        .msg-time { font-size: 0.7rem; opacity: 0.7; display: block; margin-top: 6px; text-align: right; }
-        .msg-img { max-width: 100%; max-height: 200px; border-radius: 8px; margin-top: 8px; display: block; object-fit: contain; }
-        .chat-controls { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
-        .chat-input { flex: 1; margin-bottom: 0; padding: 12px 16px; }
-        .file-label { cursor: pointer; color: #a855f7; font-size: 1.5rem; padding: 8px; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; }
-        .file-label:hover { transform: scale(1.1); }
+        .msg-other { align-self: flex-start; background: var(--chat-other); color: var(--text-main); border-bottom-left-radius: 4px; }
 
-        /* Feedback Animation */
-        #feedback-success-msg { display: none; text-align: center; padding: 2rem; }
-        .checkmark-circle { width: 80px; height: 80px; position: relative; display: inline-block; }
-        .checkmark-circle .background { width: 80px; height: 80px; border-radius: 50%; background: var(--success-color); position: absolute; animation: bounceIn 0.6s forwards; }
-        .checkmark-circle .checkmark { position: absolute; transform: rotate(45deg); width: 25px; height: 45px; border-bottom: 5px solid #fff; border-right: 5px solid #fff; top: 12px; left: 28px; animation: checkmarkDraw 0.3s ease 0.4s forwards; }
-        @keyframes bounceIn { 0% {transform: scale(0);} 80% {transform: scale(1.1);} 100% {transform: scale(1);} }
-        @keyframes checkmarkDraw { 0% {height: 0; width: 0;} 100% {height: 45px; width: 25px;} }
-        .feedback-rating { display: flex; justify-content: center; gap: 10px; margin-bottom: 1rem; }
-        .star-icon { font-size: 2rem; color: var(--text-muted); cursor: pointer; }
-        .star-icon:hover, .star-icon.active { color: #fbbf24; }
-
-        /* Calc Result */
-        .result-box { background: var(--input-bg); color: var(--text-main); padding: 1.5rem; border-radius: 16px; margin-top: 2rem; display: none; position: relative; border: 1px solid var(--glass-border); }
-        .result-box::before { content: ''; position: absolute; top: 0; left: 0; bottom: 0; width: 6px; background: var(--primary-gradient); border-radius: 16px 0 0 16px; }
-        .visual-box { width: 100%; height: 350px; background: var(--input-bg); border-radius: 12px; margin-top: 1.5rem; overflow: hidden; border: 1px solid var(--border-graph); }
-
-        /* Team Avatar */
         .team-card { text-align: center; padding: 2rem 1rem; }
-        .avatar img { width: 100px; height: 100px; border-radius: 50%; border: 3px solid #a855f7; object-fit: cover; }
-        .team-nim { color: var(--text-muted); font-size: 0.9rem; margin: 5px 0; font-family: monospace; font-weight: bold; }
-        .role-badge { background: rgba(168, 85, 247, 0.15); color: #a855f7; padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; display: inline-block; }
+        .team-card img { width: 110px; height: 110px; border-radius: 50%; border: 4px solid #a855f7; object-fit: cover; margin-bottom: 15px; }
+        .role-badge { background: rgba(168, 85, 247, 0.2); color: #a855f7; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; display: inline-block; margin-bottom: 10px; }
+        .quote { font-style: italic; font-size: 0.85rem; color: var(--text-muted); margin-top: 10px; line-height: 1.4; }
 
-        @media(max-width: 768px) { .desktop-menu{display:none} .hamburger{display:block} }
+        .auth-toggle { color: #a855f7; cursor: pointer; font-weight: 700; text-decoration: underline; margin-top: 10px; display: inline-block; }
+        .forgot-pass { font-size: 0.85rem; color: var(--text-muted); cursor: pointer; display: block; margin-top: 10px; }
     </style>
 </head>
 <body data-theme="dark">
@@ -240,153 +109,211 @@
     <nav class="navbar">
         <div class="nav-container">
             <a href="#" onclick="switchPage('home')" class="logo">Kalkulus<span>Pro</span></a>
-            
-            <div class="nav-actions" style="display: flex; align-items: center; gap: 20px;">
-                <button id="theme-toggle" onclick="toggleTheme()" title="Ganti Tema">
-                    <i class="fa-solid fa-sun"></i>
-                </button>
-
-                <div class="desktop-menu">
-                    <a href="#" class="desktop-link active" onclick="switchPage('home')" id="dt-link-home">Materi</a>
-                    <a href="#" class="desktop-link" onclick="switchPage('calculator')" id="dt-link-calc">Kalkulator</a>
-                    <a href="#" class="desktop-link" onclick="switchPage('chat')" id="dt-link-chat">Diskusi</a>
-                    <a href="#" class="desktop-link" onclick="switchPage('feedback')" id="dt-link-feedback">Feedback</a>
-                    <a href="#" class="desktop-link" onclick="switchPage('about')" id="dt-link-about">Tim</a>
-                </div>
-                
-                <i class="fa-solid fa-bars hamburger" id="hamburger-btn"></i>
+            <div class="desktop-menu">
+                <a class="desktop-link active" onclick="switchPage('home')" id="nav-home">Materi</a>
+                <a class="desktop-link" onclick="switchPage('calculator')" id="nav-calculator">Kalkulator</a>
+                <a class="desktop-link" onclick="switchPage('chat')" id="nav-chat">Diskusi</a>
+                <a class="desktop-link" onclick="switchPage('feedback')" id="nav-feedback">Feedback</a>
+                <a class="desktop-link" onclick="switchPage('about')" id="nav-about">Tim</a>
             </div>
+            <button id="theme-toggle" onclick="toggleTheme()" style="background:none; border:none; color:var(--text-main); cursor:pointer;"><i class="fa-solid fa-circle-half-stroke"></i></button>
         </div>
     </nav>
 
-    <div class="sidebar" id="sidebar">
-        <i class="fa-solid fa-xmark sidebar-close" id="sidebar-close-btn"></i>
-        <div style="margin-bottom: 2rem; padding-left: 1rem; opacity: 0.6; font-size: 0.9rem; letter-spacing: 1px;">MENU UTAMA</div>
-        <a href="#" class="mobile-link" onclick="switchPage('home')">Materi</a>
-        <a href="#" class="mobile-link" onclick="switchPage('calculator')">Kalkulator</a>
-        <a href="#" class="mobile-link" onclick="switchPage('chat')">Diskusi</a>
-        <a href="#" class="mobile-link" onclick="switchPage('feedback')">Feedback</a>
-        <a href="#" class="mobile-link" onclick="switchPage('about')">Tim</a>
-    </div>
-
-    <!-- HOME -->
+    <!-- DASHBOARD MATERI -->
     <section id="home" class="page-section active-page">
         <div style="text-align:center; margin-bottom:3rem;">
-            <h1 class="page-title">Program Kalkulus Kelompok Satu</h1>
-            <p class="page-desc">Program ini dibuat sebagai bagian dari rangkaian tugas besar akhir Mata kuliah Kalkulus, Program studi Pendidikan Ilmu Komputer, Universitas Pendidikan Indonesia.</p>
+            <h1 style="font-size: 2.8rem;" class="logo"><span>Eksplorasi</span> Kalkulus</h1>
+            <p style="color:var(--text-muted);">Pahami setiap konsep dengan materi mendalam dan grafik interaktif.</p>
         </div>
         <div class="grid-container">
-            <div class="glass-card"><div class="materi-icon"><i class="fa-solid fa-hashtag"></i></div><h3>Sistem Bilangan</h3><p>Himpunan bilangan real, sifat urutan, interval, dan pertidaksamaan nilai mutlak.</p><div class="link-text" onclick="openDetail('bilangan')">Pelajari</div></div>
-            <div class="glass-card"><div class="materi-icon"><i class="fa-solid fa-wave-square"></i></div><h3>Fungsi & Grafik</h3><p>Relasi, domain, range, jenis fungsi (aljabar & transenden), dan transformasi grafik.</p><div class="link-text" onclick="openDetail('fungsi')">Pelajari</div></div>
-            <div class="glass-card"><div class="materi-icon"><i class="fa-solid fa-infinity"></i></div><h3>Limit Fungsi</h3><p>Definisi formal, limit kiri/kanan, teorema limit, dan kekontinuan fungsi.</p><div class="link-text" onclick="openDetail('limit')">Pelajari</div></div>
-            <div class="glass-card"><div class="materi-icon"><i class="fa-solid fa-turn-down"></i></div><h3>Turunan</h3><p>Definisi turunan, aturan rantai, turunan implisit, dan aplikasi turunan.</p><div class="link-text" onclick="openDetail('turunan')">Pelajari</div></div>
-            <div class="glass-card"><div class="materi-icon"><i class="fa-solid fa-draw-polygon"></i></div><h3>Integral Tentu</h3><p>Jumlah Riemann, Teorema Dasar Kalkulus, dan teknik pengintegralan.</p><div class="link-text" onclick="openDetail('integral')">Pelajari</div></div>
-            <div class="glass-card"><div class="materi-icon"><i class="fa-solid fa-shapes"></i></div><h3>Volume Benda Putar</h3><p>Metode cakram, cincin, dan kulit tabung untuk menghitung volume.</p><div class="link-text" onclick="openDetail('volume')">Pelajari</div></div>
-        </div>
-    </section>
-
-    <!-- CHAT (FIXED) -->
-    <section id="chat" class="page-section">
-        <div class="page-header">
-            <h1 class="page-title">Diskusi Online</h1>
-            <p class="page-desc">Tanya jawab soal matematika secara realtime.</p>
-        </div>
-        <div class="glass-card" style="max-width:800px; margin:0 auto;">
-            <div id="chat-login-area" style="text-align:center; padding:2rem;">
-                <input type="text" id="username-input" placeholder="Masukkan Nama Anda" style="text-align:center;">
-                <button class="btn-gradient" onclick="joinChat()">Bergabung</button>
-            </div>
-            <div id="chat-interface" style="display:none; flex-direction:column; height:500px;">
-                <div class="chat-messages" id="messages-container"></div>
-                <div class="chat-controls">
-                    <input type="file" id="img-upload-chat" accept="image/*" style="display:none" onchange="sendImageChat(this)">
-                    <label for="img-upload-chat" class="file-label"><i class="fa-regular fa-image"></i></label>
-                    <input type="text" id="message-input" class="chat-input" placeholder="Tulis pesan..." onkeypress="handleEnterChat(event)">
-                    <button onclick="sendTextChat()" style="background:var(--primary-gradient); border:none; color:white; padding:0 15px; border-radius:10px;"><i class="fa-solid fa-paper-plane"></i></button>
-                </div>
-            </div>
+            <div class="glass-card"><h3>Sistem Bilangan Real</h3><p>Fondasi utama kalkulus mengenai himpunan $\mathbb{R}$, interval, dan nilai mutlak.</p><button class="btn-gradient" onclick="openDetail('bilangan')">Pelajari</button></div>
+            <div class="glass-card"><h3>Fungsi & Grafik</h3><p>Aturan pemetaan, domain, range, serta transformasi fungsi visual.</p><button class="btn-gradient" onclick="openDetail('fungsi')">Pelajari</button></div>
+            <div class="glass-card"><h3>Limit & Kekontinuan</h3><p>Perilaku fungsi saat mendekati titik tertentu dan konsep grafik tanpa putus.</p><button class="btn-gradient" onclick="openDetail('limit')">Pelajari</button></div>
+            <div class="glass-card"><h3>Turunan (Diferensial)</h3><p>Konsep laju perubahan sesaat, kemiringan garis singgung, dan aturan rantai.</p><button class="btn-gradient" onclick="openDetail('turunan')">Pelajari</button></div>
+            <div class="glass-card"><h3>Integral Tentu</h3><p>Perhitungan akumulasi luas daerah di bawah kurva fungsi $f(x)$.</p><button class="btn-gradient" onclick="openDetail('integral')">Pelajari</button></div>
+            <div class="glass-card"><h3>Volume Benda Putar</h3><p>Pemanfaatan integral untuk menghitung volume objek 3D hasil rotasi.</p><button class="btn-gradient" onclick="openDetail('volume')">Pelajari</button></div>
         </div>
     </section>
 
     <!-- DETAIL MATERI -->
     <section id="detail-materi" class="page-section">
-        <button onclick="switchPage('home')" style="background:none; border:none; color:var(--text-muted); font-size:1.2rem; cursor:pointer; margin-bottom:1rem;"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
-        <h2 id="detail-title" style="margin-bottom:1rem;" class="gradient-text">Judul</h2>
-        <div class="glass-card">
-            <p id="detail-desc" style="line-height:1.8; text-align:justify;"></p>
-            <ul id="detail-points" style="margin-top:1rem; padding-left:20px;"></ul>
+        <button onclick="switchPage('home')" style="background:none; border:none; color:#a855f7; cursor:pointer; font-weight:700; margin-bottom:1.5rem;"><i class="fa-solid fa-arrow-left"></i> Dashboard</button>
+        <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 2rem;">
+            <div class="glass-card">
+                <h2 id="detail-title" class="logo"><span>Judul</span></h2>
+                <div id="detail-desc" style="line-height:1.8; text-align: justify; font-size: 0.95rem;"></div>
+                <h4 style="color:#a855f7; margin-top:20px;">Konsep Fundamental:</h4>
+                <ul id="detail-points" style="line-height:2.2; font-size: 0.95rem;"></ul>
+            </div>
+            <div class="glass-card">
+                <h4>Visualisasi Interaktif</h4>
+                <div id="detail-graph" class="visual-box"></div>
+                <h4 style="color:#a855f7; margin-top:20px;">Persamaan Penting:</h4>
+                <div id="detail-formula" style="text-align:center; padding:15px; background:var(--input-bg); border-radius:12px;"></div>
+            </div>
         </div>
-        <div class="grid-container" style="margin-top:1.5rem;">
-            <div class="glass-card"><h4>Rumus</h4><div id="detail-formula" style="margin:1rem 0;"></div><h4>Contoh</h4><div id="detail-example"></div></div>
-            <div class="glass-card"><h4>Grafik</h4><div id="detail-graph" class="visual-box"></div></div>
-        </div>
-        <button class="btn-gradient" onclick="switchPage('calculator')">Coba Kalkulator</button>
     </section>
 
     <!-- KALKULATOR -->
     <section id="calculator" class="page-section">
-        <div class="page-header"><h1 class="page-title">Program Penghitung Kalkulus</h1><p class="page-desc">Scan soal (dalam pengembangan/BETA) atau input manual.</p></div>
-        <div class="glass-card" style="max-width:800px; margin:0 auto;">
-            <div class="scan-area" style="border:2px dashed var(--glass-border); padding:2rem; text-align:center; margin-bottom:2rem;">
-                <input type="file" id="scan-file" accept="image/*" style="display:none;" onchange="processImage(event)">
-                <label for="scan-file" style="cursor:pointer; color:var(--text-muted);"><i class="fa-solid fa-camera" style="font-size:2rem; color:#a855f7; display:block; margin-bottom:10px;"></i>Klik untuk Scan Soal</label>
-                <canvas id="scan-canvas" style="display:none;"></canvas>
-                <div id="scan-preview-container" style="display:none; justify-content:center; margin-top:15px;"><img id="scan-preview" src="" style="max-width:100%; max-height:200px; border-radius:8px;"></div>
-                <div id="ocr-status" style="margin-top:10px; color:#a855f7;"></div>
+        <div class="glass-card" style="max-width: 800px; margin: 0 auto;">
+            <h2 class="logo"><span>Studio</span> Kalkulasi</h2>
+            <div style="border: 2px dashed var(--glass-border); padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 1.5rem;">
+                <input type="file" id="scan-file" accept="image/*" style="display:none;" onchange="processOCR(event)">
+                <label for="scan-file" style="cursor:pointer; color:#a855f7;"><i class="fa-solid fa-camera" style="font-size:2rem;"></i><br>Scan Soal (OCR Mode)</label>
             </div>
-            <select id="op-select" onchange="toggleCalcInputs()">
-                <option value="simplify">Sederhanakan</option>
-                <option value="limit">Limit</option>
-                <option value="diff">Turunan</option>
-                <option value="defint">Integral Tentu</option>
-                <option value="volume">Volume Benda Putar</option>
+            
+            <select id="op-select" onchange="toggleInputs()">
+                <option value="simplify">Sederhanakan Aljabar</option>
+                <option value="diff">Turunan Pertama $f'(x)$</option>
+                <option value="limit">Limit Fungsi $x \to c$</option>
+                <option value="defint">Integral Tentu (Luas)</option>
+                <option value="volume">Volume Benda Putar (Sumbu X)</option>
             </select>
-            <input type="text" id="expr-input" placeholder="Fungsi f(x), contoh: x^2 + 2x">
-            <div id="calc-limits" style="display:none; gap:10px;">
+            <input type="text" id="expr-input" placeholder="Masukkan fungsi, misal: x^2 + 2x">
+            <div id="extra-inputs" style="display:none; gap:10px;">
                 <input type="text" id="lim-a" placeholder="Bawah / c">
                 <input type="text" id="lim-b" placeholder="Atas">
             </div>
-            <button class="btn-gradient" onclick="calculate()">Hitung</button>
-            <div id="calc-result" class="result-box">
-                <h3>Hasil:</h3>
-                <div id="calc-steps" style="margin-bottom:1rem;"></div>
-                <div id="calc-final" style="font-weight:bold; color:#a855f7; font-size:1.2rem;"></div>
-                <div id="calc-plot" class="visual-box"></div>
+            <button class="btn-gradient" onclick="runCalculation()">Proses Hitung</button>
+            
+            <div id="calc-result" class="glass-card" style="margin-top: 2rem; display:none;">
+                <h4>Hasil:</h4>
+                <div id="res-math" style="font-size: 1.6rem; text-align: center; margin-bottom: 1.5rem; color:#a855f7;"></div>
+                <div id="res-graph" class="visual-box"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DISKUSI -->
+    <section id="chat" class="page-section">
+        <div class="glass-card" style="max-width: 500px; margin: 0 auto;">
+            <!-- LOGIN/REGISTER AREA -->
+            <div id="auth-area">
+                <h2 id="auth-title" style="text-align:center;">Masuk Akun</h2>
+                <div id="reg-fields" style="display:none;">
+                    <input type="text" id="auth-name" placeholder="Nama Lengkap">
+                </div>
+                <input type="email" id="auth-email" placeholder="Email">
+                <input type="password" id="auth-password" placeholder="Password">
+                <button class="btn-gradient" id="btn-auth-action" onclick="handleAuth()">Masuk</button>
+                <div style="text-align: center;">
+                    <span class="forgot-pass" onclick="resetPassword()">Lupa Password?</span>
+                    <span id="auth-switch-text" style="font-size: 0.9rem;">Belum punya akun?</span> 
+                    <span class="auth-toggle" onclick="toggleAuthMode()">Daftar di sini</span>
+                </div>
+            </div>
+
+            <!-- VERIFICATION AREA -->
+            <div id="verify-area" style="display: none; text-align: center;">
+                <i class="fa-solid fa-envelope-circle-check" style="font-size: 4rem; color: #a855f7; margin-bottom: 1rem;"></i>
+                <h3>Verifikasi Email Anda</h3>
+                <p style="font-size: 0.9rem; color: var(--text-muted);">Link verifikasi telah dikirim. Silakan klik link di email Anda lalu klik tombol di bawah.</p>
+                <button class="btn-gradient" onclick="checkVerification()">Saya Sudah Verifikasi</button>
+                <button class="btn-gradient" style="background: transparent; border: 1px solid #a855f7; color: #a855f7;" onclick="logout()">Ganti Akun</button>
+            </div>
+
+            <!-- CHAT INTERFACE -->
+            <div id="chat-area" style="display:none;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                    <span id="user-name-tag" style="font-weight:700; color:#a855f7;"></span>
+                    <button onclick="logout()" style="background:none; border:none; color:#ef4444; cursor:pointer; font-weight: 700;">Keluar</button>
+                </div>
+                <div class="chat-messages" id="chat-msgs"></div>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="msg-input" placeholder="Ketik pesan..." onkeypress="if(event.key==='Enter') sendMsg()">
+                    <button onclick="sendMsg()" class="btn-gradient" style="margin:0; width:55px;"><i class="fa-solid fa-paper-plane"></i></button>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- FEEDBACK -->
     <section id="feedback" class="page-section">
-        <div class="page-header"><h1 class="page-title">Berikan Umpan Balik</h1></div>
-        <div class="glass-card" style="max-width:600px; margin:0 auto; min-height:400px; display:flex; align-items:center; justify-content:center;">
-            <div id="feedback-form-content" style="width: 100%;">
+        <div class="glass-card" style="max-width: 600px; margin: 0 auto; text-align:center;">
+            <div id="fb-form">
+                <h2>Feedback</h2>
                 <input type="text" id="fb-name" placeholder="Nama">
-                <div class="feedback-rating"><i class="fa-solid fa-star star-icon" onclick="setRating(1)"></i><i class="fa-solid fa-star star-icon" onclick="setRating(2)"></i><i class="fa-solid fa-star star-icon" onclick="setRating(3)"></i><i class="fa-solid fa-star star-icon" onclick="setRating(4)"></i><i class="fa-solid fa-star star-icon" onclick="setRating(5)"></i></div>
-                <input type="hidden" id="fb-rating" value="0">
-                <textarea id="fb-msg" rows="4" placeholder="Pesan"></textarea>
-                <button class="btn-gradient" onclick="sendFeedback()">Kirim</button>
+                <textarea id="fb-msg" rows="4" placeholder="Saran Anda"></textarea>
+                <button class="btn-gradient" onclick="submitFeedback()">Kirim</button>
             </div>
-            <div id="feedback-success-msg">
-                <div class="checkmark-circle"><div class="background"></div><div class="checkmark"></div></div>
-                <h3>Terima Kasih!</h3>
+            <div id="fb-thanks" style="display:none;">
+                <h3>Terima Kasih atas Feedbacknya!</h3>
             </div>
         </div>
     </section>
 
-    <!-- TEAM -->
+    <!-- TIM -->
     <section id="about" class="page-section">
-        <div class="page-header"><h1 class="page-title">Tim Pengembang</h1><p class="page-desc">Mahasiswa Pendidikan Ilmu Komputer UPI.</p></div>
         <div class="grid-container">
-            <div class="team-card"><div class="avatar"><img src="raya.jpg"></div><h3>Aditya Raya</h3><div class="team-nim">NIM: 2507320</div><div class="role-badge">Project Manager</div></div>
-            <div class="team-card"><div class="avatar"><img src="azka.jpg"></div><h3>Azka Ramadhan</h3><div class="team-nim">NIM: 2502136</div><div class="role-badge">Lead Developer</div></div>
-            <div class="team-card"><div class="avatar"><img src="salsa.jpg"></div><h3>Salsa Nur</h3><div class="team-nim">NIM: 2501960</div><div class="role-badge">UI/UX Designer</div></div>
-            <div class="team-card"><div class="avatar"><img src="novi.jpg"></div><h3>Novi Nur</h3><div class="team-nim">NIM: 2507647</div><div class="role-badge">Content Specialist</div></div>
+            <div class="glass-card team-card">
+                <img src="raya.jpg"><h3>Aditya Raya</h3><span class="role-badge">Project Manager</span><p>NIM: 2507320</p>
+                <p class="quote">"Matematika adalah bahasa alam semesta yang paling murni."</p>
+            </div>
+            <div class="glass-card team-card">
+                <img src="azka.jpg"><h3>Azka Ramadhan</h3><span class="role-badge">Lead Programmer</span><p>NIM: 12334</p>
+                <p class="quote">"Logika membawa Anda dari A ke B, imajinasi membawa Anda ke mana saja."</p>
+            </div>
+            <div class="glass-card team-card">
+                <img src="salsa.jpg"><h3>Salsa Nur</h3><span class="role-badge">UI Designer</span><p>NIM: 2501960</p>
+                <p class="quote">"Desain bukan hanya apa yang terlihat, tapi bagaimana cara kerjanya."</p>
+            </div>
+            <div class="glass-card team-card">
+                <img src="novi.jpg"><h3>Novi Nur</h3><span class="role-badge">Content Analyst</span><p>NIM: 2507647</p>
+                <p class="quote">"Materi yang baik adalah kunci dari pemahaman yang mendalam."</p>
+            </div>
         </div>
     </section>
 
     <script>
-        // --- 1. FIREBASE CONFIG & INIT ---
+        // --- DATA MATERI TERLENGKAP ---
+        const materialData = {
+            'bilangan': {
+                title: 'Sistem Bilangan Real',
+                desc: 'Sistem bilangan real $\\mathbb{R}$ adalah dasar utama kalkulus. Ia mencakup bilangan rasional (dapat dinyatakan sebagai $\\frac{a}{b}$) dan bilangan irasional (seperti $\\pi$ atau $\\sqrt{2}$). Sifat kelengkapan bilangan real menjamin bahwa setiap himpunan yang memiliki batas atas pasti memiliki supremum.',
+                points: ['Himpunan Bilangan Bulat, Rasional, dan Irasional', 'Sifat Urutan: Trikotomi, Transitif, Penjumlahan, dan Perkalian', 'Interval Selang: Terbuka $(a,b)$, Tertutup $[a,b]$, dan Setengah Terbuka', 'Ketidaksamaan Nilai Mutlak: $|x| < a \\iff -a < x < a$', 'Pertidaksamaan Kuadrat dan Teknik Uji Titik'],
+                formula: '$$|x-a| < \\delta \\iff a-\\delta < x < a+\\delta$$',
+                graphFn: 'abs(x)'
+            },
+            'fungsi': {
+                title: 'Fungsi & Grafik',
+                desc: 'Fungsi adalah aturan pemetaan yang menghubungkan setiap elemen dari domain ke tepat satu elemen di range. Dalam kalkulus, kita fokus pada fungsi bernilai real. Transformasi grafik memungkinkan kita menggeser, mencerminkan, atau meregangkan fungsi dasar.',
+                points: ['Uji Garis Vertikal untuk Definisi Fungsi', 'Fungsi Genap $f(-x)=f(x)$ & Fungsi Ganjil $f(-x)=-f(x)$', 'Fungsi Komposisi $(f \\circ g)(x)$ dan Domain Terkait', 'Transformasi: Pergeseran Horizontal/Vertikal dan Dilatasi', 'Fungsi Transenden: Trigonometri, Eksponensial, dan Logaritma'],
+                formula: '$$y = f(x) \\rightarrow y = a \\cdot f(x-h) + k$$',
+                graphFn: 'x^2'
+            },
+            'limit': {
+                title: 'Limit & Kekontinuan',
+                desc: 'Limit menjelaskan perilaku fungsi saat variabel independen mendekati nilai tertentu. Konsep limit adalah pintu masuk menuju turunan. Fungsi dikatakan kontinu jika nilai limit di suatu titik sama dengan nilai fungsi di titik tersebut.',
+                points: ['Limit Sisi Kiri $\\lim_{x \\to c^-}$ dan Sisi Kanan $\\lim_{x \\to c^+}$', 'Teorema Limit Utama (Penjumlahan, Perkalian, Pembagian)', 'Bentuk Tak Tentu: $0/0$, $\\infty/\\infty$, dan Aturan L\'Hopital', 'Teorema Apit (Squeeze Theorem) untuk Limit Trigonometri', 'Limit di Tak Hingga dan Asimtot Horizontal'],
+                formula: '$$\\lim_{x \\to c} f(x) = f(c) \\implies \\text{Kontinu}$$',
+                graphFn: 'sin(x)/x'
+            },
+            'turunan': {
+                title: 'Turunan (Diferensial)',
+                desc: 'Turunan mengukur laju perubahan sesaat suatu fungsi. Secara geometri, ini adalah gradien garis singgung kurva. Turunan diaplikasikan luas dalam fisika (kecepatan sesaat) dan optimasi ekonomi.',
+                points: ['Definisi Limit Turunan (Diferensial)', 'Aturan Rantai (Chain Rule) untuk Fungsi Komposisi', 'Turunan Fungsi Trigonometri dan Inversnya', 'Aplikasi: Titik Stasioner, Nilai Maksimum/Minimum Lokal', 'Uji Turunan Kedua untuk Penentuan Kecekungan Kurva'],
+                formula: '$$f\'(x) = \\lim_{h \\to 0} \\frac{f(x+h)-f(x)}{h}$$',
+                graphFn: '3*x^2'
+            },
+            'integral': {
+                title: 'Integral Tentu',
+                desc: 'Integral adalah kebalikan dari proses turunan (Anti-turunan). Integral tentu secara visual mewakili luas daerah yang dibatasi oleh kurva $f(x)$ dan sumbu $x$ pada interval $[a,b]$.',
+                points: ['Teorema Dasar Kalkulus I & II', 'Teknik Integrasi: Substitusi $u$ dan Integral Parsial', 'Luas Daerah di Antara Dua Kurva', 'Integral Fungsi Trigonometri Kuadrat', 'Sifat Linearitas dan Additivitas Integral'],
+                formula: '$$\\int_{a}^{b} f(x) dx = F(b) - F(a)$$',
+                graphFn: 'x^2 + 1'
+            },
+            'volume': {
+                title: 'Volume Benda Putar',
+                desc: 'Volume benda putar diperoleh dari pemutaran suatu luasan daerah terhadap sumbu koordinat tertentu. Teknik ini mengubah masalah 2D menjadi 3D menggunakan prinsip integrasi.',
+                points: ['Metode Cakram (Disk Method) untuk Daerah Tanpa Lubang', 'Metode Cincin (Washer Method) untuk Daerah Berlubang', 'Metode Kulit Tabung (Shell Method) sebagai Alternatif', 'Perputaran terhadap Sumbu $X$ vs Sumbu $Y$', 'Volume Irisan Sejajar dan Penampang Melintang'],
+                formula: '$$V = \\pi \\int_{a}^{b} [f(x)]^2 dx$$',
+                graphFn: 'sqrt(x)'
+            }
+        };
+
+        // --- FIREBASE LOGIC ---
         const firebaseConfig = {
             apiKey: "AIzaSyAaJ8idRMCpd0DCqWM-uWTsRqHKy90moh0",
             authDomain: "program-kalkulus.firebaseapp.com",
@@ -394,389 +321,168 @@
             projectId: "program-kalkulus",
             storageBucket: "program-kalkulus.firebasestorage.app",
             messagingSenderId: "259125021336",
-            appId: "1:259125021336:web:58b3601c91bed862a79eed",
-            measurementId: "G-9W3G08HE95"
+            appId: "1:259125021336:web:58b3601c91bed862a79eed"
         };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
 
-        // Inisialisasi Firebase dengan Error Handling
-        let database;
-        let currentUser = "";
-        
-        try {
-            if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-            }
-            database = firebase.database();
-            console.log("Firebase Connected");
+        let isLoginMode = true;
+
+        auth.onAuthStateChanged(user => {
+            const authArea = document.getElementById('auth-area');
+            const verifyArea = document.getElementById('verify-area');
+            const chatArea = document.getElementById('chat-area');
             
-            // Test koneksi
-            database.ref('.info/connected').on('value', (snapshot) => {
-                if (snapshot.val() === true) {
-                    console.log("Terhubung ke Firebase Realtime Database");
+            if (user) {
+                authArea.style.display = 'none';
+                if (user.emailVerified) {
+                    verifyArea.style.display = 'none';
+                    chatArea.style.display = 'block';
+                    document.getElementById('user-name-tag').innerText = user.displayName || user.email;
+                    loadMsgs();
                 } else {
-                    console.log("Tidak terhubung ke Firebase");
+                    verifyArea.style.display = 'block';
+                    chatArea.style.display = 'none';
                 }
+            } else {
+                authArea.style.display = 'block';
+                verifyArea.style.display = 'none';
+                chatArea.style.display = 'none';
+            }
+        });
+
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            document.getElementById('auth-title').innerText = isLoginMode ? "Masuk Akun" : "Daftar Akun";
+            document.getElementById('reg-fields').style.display = isLoginMode ? "none" : "block";
+            document.getElementById('btn-auth-action').innerText = isLoginMode ? "Masuk" : "Daftar";
+            document.getElementById('auth-switch-text').innerText = isLoginMode ? "Belum punya akun?" : "Sudah punya akun?";
+        }
+
+        async function handleAuth() {
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-password').value;
+            const name = document.getElementById('auth-name').value;
+            try {
+                if(isLoginMode) {
+                    await auth.signInWithEmailAndPassword(email, pass);
+                } else {
+                    if(!name) return alert("Nama wajib diisi!");
+                    const res = await auth.createUserWithEmailAndPassword(email, pass);
+                    await res.user.updateProfile({ displayName: name });
+                    await res.user.sendEmailVerification();
+                    alert("Akun berhasil didaftar! Silakan cek email Anda untuk verifikasi.");
+                }
+            } catch(e) { alert(e.message); }
+        }
+
+        function checkVerification() {
+            auth.currentUser.reload().then(() => {
+                if(auth.currentUser.emailVerified) location.reload();
+                else alert("Email belum diverifikasi. Cek folder Inbox/Spam email Anda.");
             });
-        } catch (e) {
-            console.error("Firebase Init Error:", e);
-            alert("Gagal koneksi ke database. Chat mungkin tidak berfungsi.");
         }
 
-        // --- 2. CHAT LOGIC (REALTIME) ---
-        function joinChat() {
-            const name = document.getElementById('username-input').value.trim();
-            if (!name) return alert("Isi nama dulu!");
-            currentUser = name;
-            
-            document.getElementById('chat-login-area').style.display = 'none';
-            document.getElementById('chat-interface').style.display = 'flex';
-            
-            // Clear previous messages
-            document.getElementById('messages-container').innerHTML = '';
-            
-            // Listener Pesan Masuk
-            if (database) {
-                const messagesRef = database.ref('messages');
-                messagesRef.limitToLast(50).on('child_added', (snapshot) => {
-                    const data = snapshot.val();
-                    if (data) displayMessage(data);
-                });
-            } else {
-                alert("Database tidak terhubung. Chat tidak tersedia.");
-            }
+        function resetPassword() {
+            const email = document.getElementById('auth-email').value;
+            if(!email) return alert("Masukkan email Anda di kolom email.");
+            auth.sendPasswordResetEmail(email).then(() => alert("Link reset password telah dikirim ke email Anda."));
         }
 
-        function sendTextChat() {
-            const input = document.getElementById('message-input');
-            const msg = input.value.trim();
-            if (!msg) return;
-            if (!currentUser) return alert("Masukkan nama dulu!");
-            
-            if (database) {
-                database.ref('messages').push({
-                    user: currentUser,
-                    text: msg,
-                    type: 'text',
-                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                }).then(() => {
-                    input.value = '';
-                }).catch(e => {
-                    console.error("Gagal kirim:", e);
-                    alert("Gagal mengirim pesan: " + e.message);
-                });
-            } else {
-                alert("Database tidak terhubung. Tidak bisa mengirim pesan.");
-            }
-        }
+        function logout() { auth.signOut(); }
 
-        function sendImageChat(input) {
-            if (!currentUser) return alert("Masukkan nama dulu!");
-            
-            const file = input.files[0];
-            if (!file) return;
-            
-            if (file.size > 5 * 1024 * 1024) { // 5MB limit
-                alert("Ukuran file terlalu besar. Maksimal 5MB.");
-                return;
-            }
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                if (database) {
-                    database.ref('messages').push({
-                        user: currentUser,
-                        image: e.target.result,
-                        type: 'image',
-                        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                    });
-                } else {
-                    alert("Database tidak terhubung. Tidak bisa mengirim gambar.");
-                }
-            }
-            reader.onerror = function() {
-                alert("Gagal membaca file gambar.");
-            }
-            reader.readAsDataURL(file);
-            
-            // Reset input file
-            input.value = '';
-        }
-
-        function handleEnterChat(e) {
-            if (e.key === 'Enter') {
-                sendTextChat();
-            }
-        }
-
-        function displayMessage(data) {
-            const container = document.getElementById('messages-container');
-            const div = document.createElement('div');
-            const isMe = data.user === currentUser;
-            
-            div.className = `message-bubble ${isMe ? 'msg-self' : 'msg-other'}`;
-            
-            let content = `<div class="msg-sender">${data.user}</div>`;
-            
-            if (data.type === 'image') {
-                content += `<img src="${data.image}" class="msg-img" alt="Gambar dari ${data.user}" loading="lazy">`;
-            } else {
-                // Escape HTML untuk keamanan, tapi biarkan line breaks
-                const safeText = data.text.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
-                content += `<div>${safeText}</div>`;
-            }
-            
-            content += `<div class="msg-time">${data.time}</div>`;
-            
-            div.innerHTML = content;
-            container.appendChild(div);
-            
-            // Auto scroll ke bawah
-            container.scrollTop = container.scrollHeight;
-        }
-
-        // --- 3. THEME & NAVIGATION ---
-        function toggleTheme() {
-            const body = document.body;
-            const icon = document.querySelector('#theme-toggle i');
-            if (body.getAttribute('data-theme') === 'dark') {
-                body.setAttribute('data-theme', 'light');
-                icon.className = 'fa-solid fa-moon';
-                localStorage.setItem('theme', 'light');
-            } else {
-                body.setAttribute('data-theme', 'dark');
-                icon.className = 'fa-solid fa-sun';
-                localStorage.setItem('theme', 'dark');
-            }
-        }
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        document.body.setAttribute('data-theme', savedTheme);
-        document.querySelector('#theme-toggle i').className = savedTheme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-
-        const sidebar = document.getElementById('sidebar');
-        const hamburgerBtn = document.getElementById('hamburger-btn');
-        const closeBtn = document.getElementById('sidebar-close-btn');
-        hamburgerBtn.addEventListener('click', (e) => { sidebar.classList.add('active'); e.stopPropagation(); });
-        closeBtn.addEventListener('click', () => sidebar.classList.remove('active'));
-        document.addEventListener('click', (e) => { if (sidebar.classList.contains('active') && !sidebar.contains(e.target) && !hamburgerBtn.contains(e.target)) sidebar.classList.remove('active'); });
-
-        function switchPage(pageId) {
+        // --- CORE UI ---
+        function switchPage(id) {
             document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active-page'));
-            document.getElementById(pageId).classList.add('active-page');
-            sidebar.classList.remove('active');
-            updateActiveMenu(pageId);
-            window.scrollTo(0,0);
+            document.getElementById(id).classList.add('active-page');
+            document.querySelectorAll('.desktop-link').forEach(l => l.classList.remove('active'));
+            if(document.getElementById('nav-'+id)) document.getElementById('nav-'+id).classList.add('active');
+            window.scrollTo({top: 0, behavior: 'smooth'});
         }
-
-        function updateActiveMenu(pageId) {
-            document.querySelectorAll('.desktop-link, .mobile-link').forEach(link => link.classList.remove('active'));
-            let suffix = (pageId === 'calculator') ? 'calc' : pageId;
-            const dt = document.getElementById('dt-link-' + suffix);
-            const mb = document.getElementById('mb-link-' + suffix);
-            if(dt) dt.classList.add('active');
-            if(mb) mb.classList.add('active');
-        }
-
-        // --- 4. MATERI DATA (LENGKAP) ---
-        const materialData = {
-            'bilangan': {
-                title: 'Sistem Bilangan & Pertidaksamaan',
-                desc: 'Sistem bilangan real ($\\mathbb{R}$) adalah fondasi dari seluruh analisis real dan kalkulus. Bilangan real mencakup bilangan rasional (dapat dinyatakan sebagai p/q) dan irasional (tidak berulang, seperti $\\pi$ dan $\\sqrt{2}$). Sifat kelengkapan bilangan real memungkinkan kita melakukan operasi limit yang menjadi dasar turunan dan integral.<br><br>Pertidaksamaan melibatkan pencarian himpunan penyelesaian yang memenuhi syarat tertentu, seringkali melibatkan nilai mutlak yang mengukur jarak suatu bilangan dari nol.',
-                points: ['<strong>Sifat Trikotomi:</strong> Untuk setiap $a, b \\in \\mathbb{R}$, berlaku salah satu: $a < b$, $a = b$, atau $a > b$.', '<strong>Interval:</strong> Himpunan bagian dari garis bilangan real. Contoh: $(a, b) = \\{x \\mid a < x < b\\}$.', '<strong>Nilai Mutlak:</strong> $|x| = x$ jika $x \\ge 0$, dan $-x$ jika $x < 0$. Sifat penting: $|x| < a \\iff -a < x < a$.', '<strong>Penyelesaian Pertidaksamaan:</strong> Melibatkan manipulasi aljabar dengan aturan membalik tanda jika dikali bilangan negatif.'],
-                graphFn: 'abs(x)', graphEq: 'y = |x|', formula: '$$ |x-a| < \\delta \\iff a-\\delta < x < a+\\delta $$', example: 'Tentukan himpunan penyelesaian dari $|2x - 5| < 3$.<br><strong>Jawab:</strong><br>$$ -3 < 2x - 5 < 3 $$<br>$$ 2 < 2x < 8 $$<br>$$ 1 < x < 4 $$', calcMode: 'simplify'
-            },
-            'fungsi': {
-                title: 'Fungsi & Grafik',
-                desc: 'Fungsi adalah aturan yang memetakan setiap elemen dari himpunan domain ke tepat satu elemen di himpunan range. Dalam kalkulus, kita fokus pada fungsi bernilai real.<br><br>Memahami grafik fungsi sangat penting untuk memvisualisasikan konsep limit dan turunan. Jenis fungsi meliputi fungsi aljabar (polinomial, rasional) dan fungsi transenden (trigonometri, eksponensial, logaritma). Operasi fungsi meliputi penjumlahan, perkalian, dan komposisi.',
-                points: ['<strong>Domain & Range:</strong> Daerah asal dan daerah hasil fungsi.', '<strong>Fungsi Genap/Ganjil:</strong> Genap jika $f(-x)=f(x)$, Ganjil jika $f(-x)=-f(x)$.', '<strong>Operasi Fungsi:</strong> $(f \\circ g)(x) = f(g(x))$.', '<strong>Fungsi Invers:</strong> Fungsi yang membalikkan pemetaan, ada jika fungsi bijektif.'],
-                graphFn: 'x^3', graphEq: 'y = x^3',
-                formula: '$$ D_{f \\circ g} = \\{x \\in D_g \\mid g(x) \\in D_f\\} $$',
-                example: 'Jika $f(x) = \\sqrt{x}$ dan $g(x) = 1-x^2$, tentukan domain $f \\circ g$.<br>Syarat: $1-x^2 \ge 0 \Rightarrow x \in [-1, 1]$.',
-                calcMode: 'simplify'
-            },
-            'limit': {
-                title: 'Limit Fungsi',
-                desc: 'Limit adalah konsep fundamental yang membedakan kalkulus dengan aljabar elementer. Limit menjelaskan perilaku fungsi $f(x)$ ketika $x$ mendekati suatu nilai $c$, bukan nilai fungsi di $c$ itu sendiri. Ini memungkinkan kita mendefinisikan kekontinuan, turunan, dan integral.<br><br>Definisi formal limit ($\epsilon - \delta$) memberikan landasan yang kokoh untuk pembuktian matematis.',
-                points: ['<strong>Definisi Intuitif:</strong> $\\lim_{x \\to c} f(x) = L$ artinya $f(x)$ mendekati $L$ saat $x$ mendekati $c$.', '<strong>Limit Kiri & Kanan:</strong> Limit ada jika dan hanya jika $\\lim_{x \\to c^-} f(x) = \\lim_{x \\to c^+} f(x)$.', '<strong>Teorema Apit:</strong> Jika $g(x) \\le f(x) \\le h(x)$ dan limit $g, h$ sama, maka limit $f$ juga sama.', '<strong>Kekontinuan:</strong> Fungsi kontinu di $c$ jika $\\lim_{x \\to c} f(x) = f(c)$.'],
-                graphFn: 'sin(x)/x', graphEq: 'y = sin(x)/x',
-                formula: '$$ \\lim_{x \\to 0} \\frac{\\sin x}{x} = 1 $$',
-                example: 'Hitung $\\lim_{x \\to 2} \\frac{x^2-4}{x-2}$.<br>Faktorkan: $\\lim_{x \\to 2} (x+2) = 4$.',
-                calcMode: 'limit'
-            },
-            'turunan': {
-                title: 'Turunan (Diferensial)',
-                desc: 'Turunan mengukur laju perubahan sesaat dari suatu fungsi. Secara geometris, turunan adalah gradien (kemiringan) garis singgung kurva di suatu titik. Konsep ini digunakan luas dalam fisika (kecepatan sesaat), ekonomi (laju marginal), dan optimasi.<br><br>Proses mencari turunan disebut diferensiasi. Terdapat berbagai aturan seperti aturan pangkat, hasil kali, hasil bagi, dan aturan rantai.',
-                points: ['<strong>Definisi:</strong> $f\'(x) = \\lim_{h \\to 0} \\frac{f(x+h)-f(x)}{h}$.', '<strong>Diferensiabilitas:</strong> Jika $f$ punya turunan di $c$, maka $f$ kontinu di $c$. Kebalikannya belum tentu.', '<strong>Aturan Rantai:</strong> $\\frac{d}{dx}[f(g(x))] = f\'(g(x)) \\cdot g\'(x)$.', '<strong>Aplikasi:</strong> Menentukan titik maksimum/minimum lokal, selang kemonotonan, dan kecekungan.'],
-                graphFn: '2*x', graphEq: 'y = 2x (Turunan x^2)',
-                formula: '$$ \\frac{d}{dx}(uv) = u\'v + uv\' $$',
-                example: 'Turunan dari $y = \\sin(x^2)$ adalah $y\' = \\cos(x^2) \\cdot 2x$.',
-                calcMode: 'diff'
-            },
-            'integral': {
-                title: 'Integral Tentu',
-                desc: 'Integral adalah kebalikan dari diferensiasi (disebut antiturunan). Namun, integral tentu memiliki interpretasi geometris yang kuat sebagai luas daerah bertanda di bawah kurva $y=f(x)$ pada interval $[a,b]$.<br><br>Teorema Dasar Kalkulus menghubungkan konsep turunan dan integral, memungkinkan kita menghitung integral tentu dengan mudah menggunakan antiturunan tanpa perlu menghitung jumlah Riemann yang rumit.',
-                points: ['<strong>Jumlah Riemann:</strong> Aproksimasi luas dengan persegi panjang.', '<strong>Teorema Dasar Kalkulus I:</strong> Jika $F(x) = \\int_a^x f(t) dt$, maka $F\'(x) = f(x)$.', '<strong>Teorema Dasar Kalkulus II:</strong> $\\int_a^b f(x) dx = F(b) - F(a)$ dimana $F$ antiturunan $f$.', '<strong>Sifat Linear:</strong> Integral penjumlahan adalah jumlah integral.'],
-                graphFn: 'x^2', graphEq: 'Area di bawah x^2',
-                formula: '$$ \\int_a^b f(x) dx = \\lim_{n \\to \\infty} \\sum_{i=1}^n f(x_i^*) \\Delta x $$',
-                example: 'Hitung luas dibawah $y=2x$ dari 0 sampai 3.<br>$\\int_0^3 2x dx = [x^2]_0^3 = 9 - 0 = 9$.',
-                calcMode: 'defint'
-            },
-            'volume': {
-                title: 'Volume Benda Putar',
-                desc: 'Salah satu aplikasi integral tentu yang paling berguna adalah menghitung volume benda solid. Benda putar terbentuk ketika suatu daerah rata diputar mengelilingi suatu garis (sumbu putar).<br><br>Metode yang digunakan bergantung pada bentuk daerah dan sumbu putarnya: Metode Cakram (Disk) digunakan jika irisan tegak lurus sumbu putar berbentuk lingkaran penuh, sedangkan Metode Cincin (Washer) digunakan jika ada lubang di tengah.',
-                points: ['<strong>Metode Cakram:</strong> $V = \\pi \\int_a^b [R(x)]^2 dx$. Digunakan saat daerah menempel pada sumbu putar.', '<strong>Metode Cincin:</strong> $V = \\pi \\int_a^b ([R(x)]^2 - [r(x)]^2) dx$. Digunakan saat ada rongga.', '<strong>Metode Kulit Tabung:</strong> $V = 2\\pi \\int_a^b x f(x) dx$. Alternatif memutar sejajar sumbu y.', '<strong>Prinsip:</strong> Mengiris benda menjadi kepingan tipis, menghitung volume kepingan, lalu menjumlahkannya (integral).'],
-                graphFn: 'sqrt(x)', graphEq: 'y = √x',
-                formula: '$$ V = \\pi \\int_{a}^{b} [f(x)]^2 dx $$',
-                example: 'Volume benda dari daerah $y=x^2, x=0, x=2$ diputar sumbu-x:<br>$V = \\pi \\int_0^2 (x^2)^2 dx = \\pi [\\frac{1}{5}x^5]_0^2 = \\frac{32}{5}\\pi$.',
-                calcMode: 'volume'
-            }
-        };
 
         function openDetail(key) {
-            const d = materialData[key];
-            document.getElementById('detail-title').innerText = d.title;
-            document.getElementById('detail-desc').innerHTML = d.desc;
-            const list = document.getElementById('detail-points'); list.innerHTML='';
-            d.points.forEach(p => list.innerHTML+=`<li>${p}</li>`);
-            document.getElementById('detail-formula').innerHTML = d.formula;
-            document.getElementById('detail-example').innerHTML = d.example;
-            try {
-                document.getElementById('detail-graph').innerHTML = '';
-                const isDark = document.body.getAttribute('data-theme') === 'dark';
-                const axisColor = isDark ? '#94a3b8' : '#475569';
-                functionPlot({ 
-                    target: '#detail-graph', width: 300, height: 300, grid: true, 
-                    data: [{ fn: d.graphFn, color: '#a855f7' }],
-                    xAxis: {domain: [-10, 10], color: axisColor}, 
-                    yAxis: {domain: [-10, 10], color: axisColor}
-                });
-            } catch(e){}
+            const data = materialData[key];
+            document.getElementById('detail-title').innerHTML = `<span>${data.title}</span>`;
+            document.getElementById('detail-desc').innerHTML = data.desc;
+            const list = document.getElementById('detail-points');
+            list.innerHTML = '';
+            data.points.forEach(p => list.innerHTML += `<li>${p}</li>`);
+            document.getElementById('detail-formula').innerHTML = data.formula;
+            renderSmoothGraph('#detail-graph', data.graphFn);
             MathJax.typesetPromise();
             switchPage('detail-materi');
         }
 
-        // --- 6. CALCULATOR & OCR ---
-        function toggleCalcInputs() {
-            const op = document.getElementById('op-select').value;
-            const extra = document.getElementById('calc-limits');
-            const inp2 = document.getElementById('lim-b');
-            extra.style.display = (op==='simplify'||op==='diff') ? 'none' : 'flex';
-            if(op === 'limit') { inp2.style.display = 'none'; document.getElementById('lim-a').placeholder='Mendekati (c)'; }
-            else { inp2.style.display = 'block'; document.getElementById('lim-a').placeholder='Bawah'; }
-        }
-
-        function calculate() {
-            const op = document.getElementById('op-select').value;
-            const expr = document.getElementById('expr-input').value;
-            if(!expr) return alert("Isi fungsi!");
-            
+        function renderSmoothGraph(target, fn) {
+            const container = document.querySelector(target);
+            container.innerHTML = '';
             try {
-                let res="", steps="";
-                if(op === 'volume') {
-                    const a = document.getElementById('lim-a').value, b = document.getElementById('lim-b').value;
-                    const integral = nerdamer(`defint((${expr})^2, ${a}, ${b})`);
-                    const val = eval(integral.toString()) * Math.PI;
-                    steps = `Rumus: Pi * Integral (${expr})^2`;
-                    res = `Volume = ${val.toFixed(2)}`;
-                } else if(op === 'defint') {
-                    const a = document.getElementById('lim-a').value, b = document.getElementById('lim-b').value;
-                    const r = nerdamer(`defint(${expr}, ${a}, ${b})`);
-                    steps = `Integral dari ${a} ke ${b}`;
-                    res = r.toTeX();
-                } else if(op === 'diff') {
-                    const r = nerdamer(`diff(${expr}, x)`);
-                    steps = "Turunan terhadap x";
-                    res = r.toTeX();
-                } else if(op === 'limit') {
-                    const c = document.getElementById('lim-a').value;
-                    const r = nerdamer(`limit(${expr}, x, ${c})`);
-                    steps = `Limit x -> ${c}`;
-                    res = r.toTeX();
-                } else {
-                    const r = nerdamer(`simplify(${expr})`);
-                    steps = "Penyederhanaan";
-                    res = r.toTeX();
-                }
-                
-                document.getElementById('calc-result').style.display='block';
-                document.getElementById('calc-steps').innerText = steps;
-                document.getElementById('calc-final').innerHTML = `$$ ${res} $$`;
-                MathJax.typesetPromise();
-                
-                // Plot
-                document.getElementById('calc-plot').innerHTML='';
-                const isDark = document.body.getAttribute('data-theme') === 'dark';
-                const axisColor = isDark ? '#94a3b8' : '#475569';
-                
-                functionPlot({ 
-                    target:'#calc-plot', width:300, height:300, grid:true, 
-                    data:[{ fn: expr, color: '#a855f7' }],
-                    xAxis: {domain: [-10, 10], color: axisColor}, 
-                    yAxis: {domain: [-10, 10], color: axisColor}
+                functionPlot({
+                    target: target,
+                    width: container.clientWidth,
+                    height: 380,
+                    grid: true,
+                    data: [{ fn: fn, color: '#a855f7' }]
                 });
-
-            } catch(e){ alert("Error hitung: "+e.message); }
+                const path = d3.select(target).select('path.line');
+                const len = path.node().getTotalLength();
+                path.attr("stroke-dasharray", len + " " + len).attr("stroke-dashoffset", len)
+                    .transition().duration(2200).ease("cubic-out").attr("stroke-dashoffset", 0);
+            } catch(e) {}
         }
 
-        // OCR
-        function processImage(event) { 
-            const file = event.target.files[0]; if(!file) return;
-            const status = document.getElementById('ocr-status');
-            const preview = document.getElementById('scan-preview');
-            const container = document.getElementById('scan-preview-container');
-            
-            status.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
-            container.style.display = 'flex';
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image(); img.src = e.target.result;
-                img.onload = function() {
-                    preview.src = e.target.result;
-                    const canvas = document.getElementById('scan-canvas');
-                    const ctx = canvas.getContext('2d');
-                    canvas.width = img.width; canvas.height = img.height;
-                    ctx.drawImage(img, 0, 0);
-                    // Simple Binarization
-                    const d = ctx.getImageData(0,0,canvas.width,canvas.height);
-                    for(let i=0; i<d.data.length; i+=4){
-                        const v = d.data[i]*0.3 + d.data[i+1]*0.59 + d.data[i+2]*0.11;
-                        d.data[i]=d.data[i+1]=d.data[i+2] = v > 100 ? 255 : 0;
-                    }
-                    ctx.putImageData(d, 0, 0);
-                    
-                    Tesseract.recognize(canvas.toDataURL(), 'eng')
-                    .then(({ data: { text } }) => {
-                        let clean = text.toLowerCase().replace(/[^a-z0-9\+\-\*\/\^\(\).]/g, '');
-                        document.getElementById('expr-input').value = clean;
-                        status.innerHTML = "Selesai!";
-                    });
+        // --- CALC ---
+        function toggleInputs() {
+            const op = document.getElementById('op-select').value;
+            document.getElementById('extra-inputs').style.display = (op === 'simplify' || op === 'diff') ? 'none' : 'flex';
+        }
+
+        function runCalculation() {
+            const expr = document.getElementById('expr-input').value;
+            const op = document.getElementById('op-select').value;
+            const a = document.getElementById('lim-a').value;
+            const b = document.getElementById('lim-b').value;
+            if(!expr) return alert("Masukkan fungsi!");
+            try {
+                let res;
+                if(op === 'simplify') res = nerdamer.simplify(expr).toTeX();
+                else if(op === 'diff') res = nerdamer.diff(expr).toTeX();
+                else if(op === 'limit') res = nerdamer(`limit(${expr}, x, ${a})`).toTeX();
+                else if(op === 'defint') res = nerdamer(`defint(${expr}, ${a}, ${b})`).toTeX();
+                else if(op === 'volume') {
+                    const integral = nerdamer(`defint((${expr})^2, ${a}, ${b})`);
+                    res = `V = ${(eval(integral.toString()) * Math.PI).toFixed(4)} \\pi`;
                 }
-            };
-            reader.readAsDataURL(file);
+                document.getElementById('calc-result').style.display = 'block';
+                document.getElementById('res-math').innerHTML = `$$ ${res} $$`;
+                renderSmoothGraph('#res-graph', expr);
+                MathJax.typesetPromise();
+            } catch (e) { alert("Error hitung."); }
         }
 
-        // --- 7. FEEDBACK ---
-        function setRating(n) { document.getElementById('fb-rating').value = n; document.querySelectorAll('.star-icon').forEach((s, i) => { if(i < n) s.classList.add('active'); else s.classList.remove('active'); }); }
-        function sendFeedback() {
-            const n=document.getElementById('fb-name').value, m=document.getElementById('fb-msg').value, r=document.getElementById('fb-rating').value;
-            if(!n || !m) return alert("Lengkapi data");
-            
-            fetch("https://formspree.io/f/xjknqppb", {
-                method: "POST", headers: {'Content-Type':'application/json'},
-                body: JSON.stringify({Nama:n, Rating:r, Pesan:m})
-            }).then(r => {
-                if(r.ok) {
-                    document.getElementById('feedback-form-content').style.display='none';
-                    document.getElementById('feedback-success-msg').style.display='block';
-                    setTimeout(()=>{
-                        document.getElementById('feedback-form-content').style.display='block';
-                        document.getElementById('feedback-success-msg').style.display='none';
-                        document.getElementById('fb-name').value=''; document.getElementById('fb-msg').value='';
-                        switchPage('home');
-                    }, 3000);
-                } else alert("Gagal kirim");
+        // --- MISC ---
+        function sendMsg() {
+            const input = document.getElementById('msg-input');
+            if(!input.value.trim()) return;
+            db.ref('messages').push({ user: auth.currentUser.displayName || auth.currentUser.email, text: input.value, uid: auth.currentUser.uid });
+            input.value = '';
+        }
+
+        function loadMsgs() {
+            db.ref('messages').limitToLast(15).on('child_added', snap => {
+                const m = snap.val();
+                const div = document.createElement('div');
+                div.className = `message-bubble ${m.uid === auth.currentUser.uid ? 'msg-self' : 'msg-other'}`;
+                div.innerHTML = `<strong>${m.user}</strong><br>${m.text}`;
+                document.getElementById('chat-msgs').appendChild(div);
+                document.getElementById('chat-msgs').scrollTop = document.getElementById('chat-msgs').scrollHeight;
             });
         }
+
+        function toggleTheme() { document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'); }
+        function submitFeedback() { document.getElementById('fb-form').style.display='none'; document.getElementById('fb-thanks').style.display='block'; }
+        function processOCR(e) { Tesseract.recognize(e.target.files[0], 'eng').then(({ data: { text } }) => { document.getElementById('expr-input').value = text.toLowerCase().replace(/[^a-z0-9\+\-\*\/\^]/g, ''); }); }
     </script>
 </body>
 </html>
